@@ -6,4 +6,6 @@ compiler:
 before_install:
   - sudo apt-get install libsfml-dev
 
-find . -type f  ! -name "*.*"  -delete
+script:
+  - mkdir build && cd build && cmake ..
+  - make && sudo make install
