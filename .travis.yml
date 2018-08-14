@@ -30,6 +30,7 @@ install:
 - make
 - make install
 - cd ../../
+- ls
 script:
 - mkdir install/
 - mkdir install/SFMLengine
