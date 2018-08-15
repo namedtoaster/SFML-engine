@@ -37,13 +37,13 @@ void Game::_init() {
     // Set the Icon
     sf::Image icon;
     if (!icon.loadFromFile("icon.png")) {
-        return EXIT_FAILURE;
+      return;
     }
     _window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     
     // Load the background
     if (!_bgTexture.loadFromFile("cute_image.jpg")) {
-        return EXIT_FAILURE;
+      return;
     }
     _background.setTexture(_bgTexture);
     

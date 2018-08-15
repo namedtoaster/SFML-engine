@@ -35,7 +35,7 @@ Map::Map(const std::string &filename) {
     // load the texture - there will only be one
     // by default, just use 10 sprites per "row"
     if (!_texture.loadFromFile("sewer_1.png")) {
-        return EXIT_FAILURE;
+      return;
     }
     
     for (int i = 0; i < _numSprites; i++) {
