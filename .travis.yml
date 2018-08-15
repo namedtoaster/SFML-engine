@@ -33,6 +33,6 @@ install:
 script:
 - mkdir install/
 - mkdir install/SFMLengine
-- cmake -DCMAKE_INSTALL_PREFIX=./install/SFMLengine -DSFML_ROOT=./SFML/install -DCMAKE_MODULE_PATH=./SFML/cmake/Modules .
+- cmake -DCMAKE_INSTALL_PREFIX=./install/SFMLengine -DSFML_DIR=./SFML/install -DCMAKE_MODULE_PATH=./SFML/cmake/Modules .
 - make
 - make install
