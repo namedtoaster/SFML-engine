@@ -29,7 +29,7 @@ install:
 - cd ../../
 script:
 - mkdir install
-- mkdir instll/SFMLengine
+- mkdir install/SFMLengine
 - cd install/SFMLengine
 - cmake -DSFML_DIR=../SFML/build
 - make
