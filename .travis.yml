@@ -28,7 +28,8 @@ install:
 - sudo make install
 - cd ../../
 script:
-- mkdir install/SFMLengine
+- mkdir install
+- mkdir instll/SFMLengine
 - cd install/SFMLengine
 - cmake -DSFML_DIR=../SFML/build
 - make
