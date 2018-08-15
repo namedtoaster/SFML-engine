@@ -6,7 +6,7 @@ project(SFMLEngine)
 # set(SFML_STATIC_LIBRARIES TRUE)
 
 ## In most cases better set in the CMake cache
-set(SFML_DIR "/usr/local/lib/cmake/SFML")
+set(SFML_DIR "~/SFML/install")
 
 find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
 add_executable(SFMLEngine src/main.cpp)
