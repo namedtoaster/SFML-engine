@@ -9,5 +9,11 @@ project(SFMLEngine)
 #set(SFML_DIR "~/SFML/install")
 
 find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
-add_executable(SFMLEngine src/main.cpp)
+
+## Add includes
+include_directories(include)
+
+## Add source files
+file(GLOB SOURCES "src/*.cpp")
+
 target_link_libraries(SFMLEngine sfml-graphics sfml-audio)
