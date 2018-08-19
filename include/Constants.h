@@ -12,8 +12,8 @@
 #include <SFML/Graphics.hpp>
 
 // TODO: Load start screen image and we height to image height
-const int WIDTH = 1080;
-const int HEIGHT = 798 * 1.2;
+const int WIDTH = 600;
+const int HEIGHT = 600;
 
 const int VIEW_WIDTH = WIDTH;
 const int VIEW_HEIGHT = HEIGHT;
@@ -26,7 +26,7 @@ const float JUMP_AMT = -15.0f;
 // Get a linking error with this for some reason
 //const char* PLAYER_TEXTURE = "pixar.jpg";
 const float PLAYER_START_X = 20.0f;
-const float PLAYER_START_Y = 500.0f;
+const float PLAYER_START_Y = 200.0f;
 
 // Tiling constants
 const int TILE_W_H = 50;

@@ -14,17 +14,25 @@
 
 class Map {
 public:
+	struct {
+		std::vector<std::vector<int>> tileType;
+		std::vector<std::vector<float>> x;
+		std::vector<std::vector<float>> y;
+		int size;
+	} _tiles;
+public:
     Map(const std::string&);
-    int getNumSprites();
-    sf::Sprite getSprite(int);
+    int getMapHeight();
+	std::string getTileRow(int);
+	sf::Texture* getTextures();
+	std::vector<sf::Sprite> getSprites();
 private:
-    std::vector<int> _tiles;
     std::vector<sf::IntRect> _texRects; // this defines the rectangular region that the tile occupies
     std::vector<sf::Sprite> _sprites;
     int _numSprites;
-    int _tileW = 100;
-    int _tileH = 100;
-    sf::Texture _texture; // there's only one texture that's loaded. each sprite comes from one texture
+    float _tileW = 50.f;
+    float _tileH = 50.f;
+    sf::Texture _textures[3]; // there's only one texture that's loaded. each sprite comes from one texture
 };
 
 #endif /* Map_hpp */

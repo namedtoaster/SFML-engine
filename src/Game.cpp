@@ -21,7 +21,6 @@ Game::~Game() {
 }
 
 void Game::run() {
-    //_backgroundMusic.play();
     while (_window.isOpen()) {
         _processEvents();
         _player.updatePosition();
@@ -40,16 +39,6 @@ void Game::_init() {
       return;
     }
     _window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-    
-    // Load the background
-    if (!_bgTexture.loadFromFile("cute_image.jpg")) {
-      return;
-    }
-    _background.setTexture(_bgTexture);
-    
-    sf::IntRect temp = _background.getTextureRect();
-    _bgWidth = temp.width;
-    _bgHeight = temp.height;
     
     // Load the text
     _font.loadFromFile("chintzy.ttf");
@@ -135,8 +124,7 @@ void Game::_processEvents() {
 
 void Game::_updateViewPos() {
     std::cout << "window height - image height: " << _window.getSize().y - _bgHeight << std::endl;
-    _view.reset(sf::FloatRect(0,0, 1000,1000));//_window.getSize().x, _window.getSize().y));
-    _view.setViewport(sf::FloatRect(0, 0.3, 1.0,1.0));
+	_view.reset(sf::FloatRect(0, 0, _window.getSize().x, _window.getSize().y));
     
     // Make sure the player is in view when resizing the window
     if (_player.getPosition().x > _window.getSize().x)
@@ -156,34 +144,21 @@ void Game::_updateTextPos() {
 
 void Game::_draw() {
     // Clear the window and draw solid color (defaults to black)
-    _window.clear(sf::Color(255,255,255,255));///*defaults to black*/);
-    
-    // Draw the background image
-    _drawBackground();
-    _drawBGTest();
+    _window.clear();///*defaults to black*/);
+
+	_window.setView(_view);
     
     // TODO: Create different functions for drawing the character, drawing enemies, drawing the onscreen text, and more. For now, everything is in one function
     _drawPlayer();
-    
-    // Set the default view back for non-moving drawables
-    _window.setView(_window.getDefaultView());
+
+	// Draw tiles
+	_drawTiles();
     
     // Draw non-moving drawables (text)
     _drawText();
 
     // Display all items that have been drawn
     _window.display();
-}
-
-void Game::_addSprite(const char * file) {
-    //Sprite* temp = new Sprite(file);
-    //_sprites.push_back(temp);
-}
-
-void Game::_drawSprites() {
-    /*for (int i = 0; i < _sprites.size(); i++) {
-        _window.draw(_sprites[i]->getSprite());
-    }*/
 }
 
 void Game::_drawPlayer() {
@@ -195,14 +170,18 @@ void Game::_drawText() {
 }
 
 void Game::_drawBackground() {
-    // Set the view which moving items will be viewed from
-    _window.setView(_view);
     // Draw the background
     _window.draw(_background);
 }
 
-void Game::_drawBGTest() {
-    for (int i = 0; i < _map.getNumSprites(); i++) {
-        _window.draw(_map.getSprite(i));
-    }
+void Game::_drawTiles() {
+	sf::Texture* textures = _map.getTextures();
+	std::vector<sf::Sprite> sprites = _map.getSprites();
+	
+	for (int i = 0; i < _map._tiles.size; i++) {
+		for (int j = 0; j < _map._tiles.tileType[i].size(); j++) {
+			std::cout << _map._tiles.tileType[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}
 }
