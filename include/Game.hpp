@@ -38,7 +38,7 @@ private:
     void _drawPlayer();
     void _drawSprites();
     void _drawBackground();
-    void _drawBGTest();
+    void _drawTiles();
     void _drawText();
     bool _moveRight();
     bool _moveLeft();

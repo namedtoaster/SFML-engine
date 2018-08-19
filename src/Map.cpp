@@ -12,48 +12,41 @@
 
 Map::Map(const std::string &filename) {
     // load the file
-    // read the metadata
-    std::string path = "/Users/dave/Documents/programming/cpp/practice/SFML-test/";
-    path.append(filename);
+		// read the metadata
     std::ifstream input(filename);
     std::string line;
-    if (!getline(input, line));
-        // get the number of sprites included in the data
-    _numSprites = std::stoi(&line[0]);
-        // set the size of the tiles. we'll do 100x100 for now
-    // already set in the header file
     
-    // read the data
-        // starting with a specified line (have a default that's used to determine when this is reached), start reading in each number
-        // simply push each number onto the vector
+		// read the data
+	int i = 0;
     while (getline(input, line)) {
-        for (int i = 0; i < line.length(); i++) {
-            _tiles.push_back(line[i]);
-        }
+		_tiles.tileType.push_back(std::vector<int>());
+		_tiles.x.push_back(std::vector<float>());
+		_tiles.y.push_back(std::vector<float>());
+		for (int j = 0; j < line.size(); j++) {
+			_tiles.tileType[i].push_back(line[j] - '0');
+			_tiles.x[i].push_back((float)j * _tileW);
+			_tiles.y[i].push_back((float)i * _tileH);
+		}
+		i++;
     }
     
-    // load the texture - there will only be one
-    // by default, just use 10 sprites per "row"
-    if (!_texture.loadFromFile("sewer_1.png")) {
-      return;
-    }
-    
-    for (int i = 0; i < _numSprites; i++) {
-        _texRects.push_back(sf::IntRect(i * TILE_W_H, i / TILES_PER_ROW * TILE_W_H, TILE_W_H, TILE_W_H));
-        _sprites.push_back(sf::Sprite(_texture));
-        _sprites[i].setTextureRect(_texRects[i]);
-    }
-    
-    // for testing - set different positions for the tiles
-    for (int i = 0; i < _numSprites; i++) {
-        _sprites[i].setPosition(i * 100, i * 100);
-    }
+    // load the textures - 0 = wall, 1 = ground, 2 = lava
+	if (!_textures[0].loadFromFile("wall.png"))
+		return;
+	if (!_textures[1].loadFromFile("ground.png"))
+		return;
+	if (!_textures[2].loadFromFile("lava.png"))
+		return;
+
+	sf::Sprite wall; sf::Sprite ground; sf::Sprite lava;
+	_sprites.push_back(wall); _sprites.push_back(ground); _sprites.push_back(lava);
+	_sprites[0].setTexture(_textures[0]); _sprites[1].setTexture(_textures[1]); _sprites[2].setTexture(_textures[2]);
 }
 
-int Map::getNumSprites() {
-    return _numSprites;
+std::vector<sf::Sprite> Map::getSprites() {
+    return _sprites;
 }
 
-sf::Sprite Map::getSprite(int index) {
-    return _sprites[index];
+sf::Texture* Map::getTextures() {
+	return _textures;
 }
