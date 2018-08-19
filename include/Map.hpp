@@ -16,15 +16,12 @@ class Map {
 public:
 	struct {
 		// TODO: find a way to dyanmically size the arrays based on the map data (maybe use vectors?)
-		int tileType[7][15];
-		float x[7][15];
-		float y[7][15];
-		int size;
+		std::vector<std::vector<int> > tileType;
+		std::vector<std::vector<float> > x;
+		std::vector<std::vector<float> > y;
 	} _tiles;
 public:
     Map(const std::string&);
-    int getMapHeight();
-	std::string getTileRow(int);
 	sf::Texture* getTextures();
 	std::vector<sf::Sprite> getSprites();
 private:

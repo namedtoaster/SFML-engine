@@ -53,6 +53,14 @@ void Game::_init() {
 
 
 
+	for (int i = 0; i < _map._tiles.x.size(); i++) {
+		for (int j = 0; j < _map._tiles.x[i].size(); j++) {
+			std::cout << _map._tiles.x[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}
+
+
 
     
     // Run the game
@@ -180,8 +188,8 @@ void Game::_drawTiles() {
 	sf::Texture* textures = _map.getTextures();
 	std::vector<sf::Sprite> sprites = _map.getSprites();
 
-	for (int i = 0; i < 7; i++) {
-		for (int j = 0; j < 15; j++) {
+	for (int i = 0; i < _map._tiles.tileType.size(); i++) {
+		for (int j = 0; j < _map._tiles.tileType[i].size(); j++) {
 			sprites[_map._tiles.tileType[i][j]].setPosition(_map._tiles.x[i][j], _map._tiles.y[i][j]);
 			_window.draw(sprites[_map._tiles.tileType[i][j]]);
 		}

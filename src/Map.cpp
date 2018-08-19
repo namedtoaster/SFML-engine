@@ -12,26 +12,20 @@
 
 Map::Map(const std::string &filename) {
     // load the file
-    // read the metadata
+		// read the metadata
     std::ifstream input(filename);
     std::string line;
-    if (!getline(input, line));
-        // get the number of sprites included in the data
-    _numSprites = std::stoi(&line[0]);
-        // set the size of the tiles. we'll do 100x100 for now
-    // already set in the header file
     
-    // read the data
-        // starting with a specified line (have a default that's used to determine when this is reached), start reading in each number
-        // simply push each line onto the vector for the tile type
-		// then push the position for each sprite based on its index and tile size
-	std::cout << _numSprites << std::endl;
+		// read the data
 	int i = 0;
     while (getline(input, line)) {
+		_tiles.tileType.push_back(std::vector<int>());
+		_tiles.x.push_back(std::vector<float>());
+		_tiles.y.push_back(std::vector<float>());
 		for (int j = 0; j < line.size(); j++) {
-			_tiles.tileType[i][j] = line[j] - '0';
-			_tiles.x[i][j] = ((float)j * _tileW);
-			_tiles.y[i][j] = ((float)i * _tileH);
+			_tiles.tileType[i].push_back(line[j] - '0');
+			_tiles.x[i].push_back((float)j * _tileW);
+			_tiles.y[i].push_back((float)i * _tileH);
 		}
 		i++;
     }
