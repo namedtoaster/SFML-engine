@@ -50,8 +50,10 @@ void Game::_init() {
     
     // Initialize the view to always be in the center of the screen, regardless of the size of the window. This will be called when resizing the window as well
     _updateViewPos();
-    
-    
+
+
+
+
     
     // Run the game
     run();
@@ -148,11 +150,11 @@ void Game::_draw() {
 
 	_window.setView(_view);
     
-    // TODO: Create different functions for drawing the character, drawing enemies, drawing the onscreen text, and more. For now, everything is in one function
-    _drawPlayer();
-
 	// Draw tiles
 	_drawTiles();
+
+    // TODO: Create different functions for drawing the character, drawing enemies, drawing the onscreen text, and more. For now, everything is in one function
+    _drawPlayer();
     
     // Draw non-moving drawables (text)
     _drawText();
@@ -177,11 +179,11 @@ void Game::_drawBackground() {
 void Game::_drawTiles() {
 	sf::Texture* textures = _map.getTextures();
 	std::vector<sf::Sprite> sprites = _map.getSprites();
-	
-	for (int i = 0; i < _map._tiles.size; i++) {
-		for (int j = 0; j < _map._tiles.tileType[i].size(); j++) {
-			std::cout << _map._tiles.tileType[i][j] << " ";
+
+	for (int i = 0; i < 7; i++) {
+		for (int j = 0; j < 15; j++) {
+			sprites[_map._tiles.tileType[i][j]].setPosition(_map._tiles.x[i][j], _map._tiles.y[i][j]);
+			_window.draw(sprites[_map._tiles.tileType[i][j]]);
 		}
-		std::cout << std::endl;
 	}
 }

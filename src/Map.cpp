@@ -25,16 +25,16 @@ Map::Map(const std::string &filename) {
         // starting with a specified line (have a default that's used to determine when this is reached), start reading in each number
         // simply push each line onto the vector for the tile type
 		// then push the position for each sprite based on its index and tile size
-	int count = 0;
+	std::cout << _numSprites << std::endl;
+	int i = 0;
     while (getline(input, line)) {
-		for (int i = 0; i < line.size(); i++) {
-			_tiles.tileType[count].push_back(line[i]);
-			_tiles.x[count].push_back((float)i * _tileW);
-			_tiles.y[count].push_back((float)count * _tileH);
+		for (int j = 0; j < line.size(); j++) {
+			_tiles.tileType[i][j] = line[j] - '0';
+			_tiles.x[i][j] = ((float)j * _tileW);
+			_tiles.y[i][j] = ((float)i * _tileH);
 		}
-		count++;
+		i++;
     }
-	_tiles.size = _tiles.tileType.size();
     
     // load the textures - 0 = wall, 1 = ground, 2 = lava
 	if (!_textures[0].loadFromFile("wall.png"))
