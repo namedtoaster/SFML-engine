@@ -12,7 +12,7 @@
 #include <iostream>
 #include <algorithm>
 
-Player::Player() : _posX(PLAYER_START_X), _posY(PLAYER_START_Y), _isJumping(false), _velX(0.0f), _velY(0.0f), _accelX(0.0f), _accelY(0.0f) {
+Player::Player() : _posX(PLAYER_START_X), _posY(PLAYER_START_Y), _falling(true), _velX(0.0f), _velY(0.0f), _accelX(0.0f), _accelY(0.0f) {
     if (!_texture.loadFromFile("pixar.jpg")) {
       return;
     }
@@ -24,14 +24,6 @@ Player::Player() : _posX(PLAYER_START_X), _posY(PLAYER_START_Y), _isJumping(fals
     // Initialize members vars
     _texWidth = _texture.getSize().x;
     _texHeight = _texture.getSize().y;
-
-	_isJumping = false;
-	_isColliding = false;
-
-	colliding.up = false;
-	colliding.down = false;
-	colliding.left = false;
-	colliding.right = false;
 
 	// Load the text
 	_posFont.loadFromFile("chintzy.ttf");
@@ -73,12 +65,30 @@ void Player::_setPosition(float x, float y) {
 
 void Player::jump() {
     _velY = JUMP_AMT;
-    _isJumping = true;
+	_falling = true;
 }
 
-void Player::checkCollisions(const Map &map) {
+void Player::update(const Map& map) {
+	_applyGravity();
+	_checkCollisions(map);
+	_updatePosition();
+}
+
+void Player::_applyGravity() {
+	if (_falling) {
+		_velY += GRAVITY;
+		_posY += _velY;
+	}
+	else {
+		_velY = 0;
+		_falling = false;
+	}
+}
+
+void Player::_checkCollisions(const Map &map) {
 	std::vector<sf::Vector2f> collideTilePosition;
 
+	// TODO: set member var for player w/h
 	float playerW = _sprite.getGlobalBounds().width;
 	// Check four corners
 	_checkTilePosition(map, collideTilePosition, _posX, _posY);
@@ -102,8 +112,8 @@ void Player::_checkTilePosition(const Map& map,
 
 	if (map._tiles[cornerPos.y][cornerPos.x].tileType != 0) {
 		collideTilePosition.push_back(sf::Vector2f((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2), (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2)));
-		_posText.setString("x: " + std::to_string(collideTilePosition[0].x));
 	}
+	else _falling = true;
 }
 
 void Player::_collideWithTile(sf::Vector2f pos) {
@@ -128,6 +138,7 @@ void Player::_collideWithTile(sf::Vector2f pos) {
 			}
 		}
 		else {
+			_falling = false;
 			if (distVec.y < 0) {
 				_posY -= ydepth;
 			}
@@ -150,8 +161,8 @@ sf::Vector2f Player::getPosition() {
     return sf::Vector2f(_posX, _posY);
 }
 
-bool Player::isJumping() {
-    return _isJumping;
+bool Player::isFalling() {
+    return _falling;
 }
 
 sf::Vector2u Player::getSize() {

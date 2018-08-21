@@ -23,7 +23,7 @@ Game::~Game() {
 void Game::run() {
     while (_window.isOpen()) {
         _processEvents();
-		_player.checkCollisions(_map);
+		_player.update(_map);
         _draw();
     }
 }
@@ -73,18 +73,19 @@ void Game::_processEvents() {
             _window.close();
         }
     }
+
     
     // Movement
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 		_player.moveUp();
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
 		_player.moveDown();
 	}
     
     // Move right
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && _player.getPosition().x < _bgWidth - _player.getSize().x / 2)
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && _player.getPosition().x < _bgWidth - _player.getSize().x / 2)
     {
         // Update the player position
         _player.moveRight();
@@ -98,7 +99,7 @@ void Game::_processEvents() {
         }
     }
     // Move left
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && _player.getPosition().x > PLAYER_START_X)
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && _player.getPosition().x > PLAYER_START_X)
     {
         // Update the player position
         _player.moveLeft();
@@ -117,7 +118,7 @@ void Game::_processEvents() {
     }
     
     // Jump
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !_player.isJumping()) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !_player.isFalling()) {
         _player.jump();
     }
     
@@ -132,13 +133,7 @@ void Game::_processEvents() {
 
 void Game::_updateViewPos() {
 	_view.reset(sf::FloatRect(0, 0, _window.getSize().x, _window.getSize().y));
-    
-    // Make sure the player is in view when resizing the window
-    if (_player.getPosition().x > _window.getSize().x)
-        _view.setCenter(_player.getPosition().x, _view.getCenter().y);
-    // If the player is past the point which would cause the view to be shifted too far left when the window is shrunk, center up the view on the middle of the window
-    if (_player.getPosition().x > _bgWidth - _window.getSize().x / 2)
-        _view.setCenter(_bgWidth - _window.getSize().x / 2, _view.getCenter().y);
+
     
     // Update the text positions
     _updateTextPos();
