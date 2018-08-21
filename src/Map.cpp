@@ -19,13 +19,9 @@ Map::Map(const std::string &filename) {
 		// read the data
 	int i = 0;
     while (getline(input, line)) {
-		_tiles.tileType.push_back(std::vector<int>());
-		_tiles.x.push_back(std::vector<float>());
-		_tiles.y.push_back(std::vector<float>());
+		_tiles.push_back(std::vector<Tile>());
 		for (int j = 0; j < line.size(); j++) {
-			_tiles.tileType[i].push_back(line[j] - '0');
-			_tiles.x[i].push_back((float)j * _tileW);
-			_tiles.y[i].push_back((float)i * _tileH);
+			_tiles[i].push_back(Tile(line[j] - '0', (float)j * _tileW, (float)i * _tileH));
 		}
 		i++;
     }

@@ -23,7 +23,6 @@ Game::~Game() {
 void Game::run() {
     while (_window.isOpen()) {
         _processEvents();
-        _player.updatePosition();
         _draw();
     }
 }
@@ -50,15 +49,6 @@ void Game::_init() {
     
     // Initialize the view to always be in the center of the screen, regardless of the size of the window. This will be called when resizing the window as well
     _updateViewPos();
-
-
-
-	for (int i = 0; i < _map._tiles.x.size(); i++) {
-		for (int j = 0; j < _map._tiles.x[i].size(); j++) {
-			std::cout << _map._tiles.x[i][j] << " ";
-		}
-		std::cout << std::endl;
-	}
 
 
 
@@ -130,10 +120,11 @@ void Game::_processEvents() {
         
         // TODO: Prevent the window from being shurnk smaller than the height of the map and a set width
     }
+
+	_player.checkCollisions(_map);
 }
 
 void Game::_updateViewPos() {
-    std::cout << "window height - image height: " << _window.getSize().y - _bgHeight << std::endl;
 	_view.reset(sf::FloatRect(0, 0, _window.getSize().x, _window.getSize().y));
     
     // Make sure the player is in view when resizing the window
@@ -173,6 +164,7 @@ void Game::_draw() {
 
 void Game::_drawPlayer() {
     _window.draw(_player.getSprite());
+	_window.draw(_player.getPosText());
 }
 
 void Game::_drawText() {
@@ -188,10 +180,10 @@ void Game::_drawTiles() {
 	sf::Texture* textures = _map.getTextures();
 	std::vector<sf::Sprite> sprites = _map.getSprites();
 
-	for (int i = 0; i < _map._tiles.tileType.size(); i++) {
-		for (int j = 0; j < _map._tiles.tileType[i].size(); j++) {
-			sprites[_map._tiles.tileType[i][j]].setPosition(_map._tiles.x[i][j], _map._tiles.y[i][j]);
-			_window.draw(sprites[_map._tiles.tileType[i][j]]);
+	for (int i = 0; i < _map._tiles.size(); i++) {
+		for (int j = 0; j < _map._tiles[i].size(); j++) {
+			sprites[_map._tiles[i][j].tileType].setPosition(_map._tiles[i][j].x, _map._tiles[i][j].y);
+			_window.draw(sprites[_map._tiles[i][j].tileType]);
 		}
 	}
 }
