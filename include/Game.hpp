@@ -59,6 +59,9 @@ private:
     GameState _state;
     Map _map;
     std::vector<sf::Sprite*> _sprites;
+
+	// Friend classes
+	friend class Player;
 };
 
 #endif /* Game_hpp */

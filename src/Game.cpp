@@ -23,7 +23,7 @@ Game::~Game() {
 void Game::run() {
     while (_window.isOpen()) {
         _processEvents();
-        _player.updatePosition();
+		_player.checkCollisions(_map);
         _draw();
     }
 }
@@ -53,15 +53,6 @@ void Game::_init() {
 
 
 
-	for (int i = 0; i < _map._tiles.x.size(); i++) {
-		for (int j = 0; j < _map._tiles.x[i].size(); j++) {
-			std::cout << _map._tiles.x[i][j] << " ";
-		}
-		std::cout << std::endl;
-	}
-
-
-
     
     // Run the game
     run();
@@ -84,6 +75,13 @@ void Game::_processEvents() {
     }
     
     // Movement
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+		_player.moveUp();
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+		_player.moveDown();
+	}
     
     // Move right
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && _player.getPosition().x < _bgWidth - _player.getSize().x / 2)
@@ -133,7 +131,6 @@ void Game::_processEvents() {
 }
 
 void Game::_updateViewPos() {
-    std::cout << "window height - image height: " << _window.getSize().y - _bgHeight << std::endl;
 	_view.reset(sf::FloatRect(0, 0, _window.getSize().x, _window.getSize().y));
     
     // Make sure the player is in view when resizing the window
@@ -173,6 +170,7 @@ void Game::_draw() {
 
 void Game::_drawPlayer() {
     _window.draw(_player.getSprite());
+	_window.draw(_player.getPosText());
 }
 
 void Game::_drawText() {
@@ -188,10 +186,10 @@ void Game::_drawTiles() {
 	sf::Texture* textures = _map.getTextures();
 	std::vector<sf::Sprite> sprites = _map.getSprites();
 
-	for (int i = 0; i < _map._tiles.tileType.size(); i++) {
-		for (int j = 0; j < _map._tiles.tileType[i].size(); j++) {
-			sprites[_map._tiles.tileType[i][j]].setPosition(_map._tiles.x[i][j], _map._tiles.y[i][j]);
-			_window.draw(sprites[_map._tiles.tileType[i][j]]);
+	for (int i = 0; i < _map._tiles.size(); i++) {
+		for (int j = 0; j < _map._tiles[i].size(); j++) {
+			sprites[_map._tiles[i][j].tileType].setPosition(_map._tiles[i][j].x, _map._tiles[i][j].y);
+			_window.draw(sprites[_map._tiles[i][j].tileType]);
 		}
 	}
 }

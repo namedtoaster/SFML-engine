@@ -10,6 +10,7 @@
 #define Player_hpp
 
 #include "Constants.h"
+#include "Map.hpp"
 
 class Player {
 public:
@@ -22,13 +23,15 @@ public:
     bool isJumping();
     void moveRight();
     void moveLeft();
+	void moveDown();
+	void moveUp();
     void jump();
-    void setVelY(float);
-    void updatePosition();
     sf::Vector2f getPosition();
+	void checkCollisions(const Map&);
     
         // Drawing
     sf::Sprite getSprite();
+	sf::Text getPosText();
     
         // Tex/Sprite data
     sf::Vector2u getSize();
@@ -45,15 +48,29 @@ private:
     int _texWidth;
     int _texHeight;
     bool _isJumping;
+	bool _isColliding;
+
+	struct {
+		bool up;
+		bool down;
+		bool left;
+		bool right;
+	} colliding;
     
         // Drawing
     sf::Sprite _sprite;
     sf::Texture _texture;
+	sf::Text _posText;
+	sf::Font _posFont;
     
     // Member methods
     
         // Movement
     void _setPosition(float, float);
+	void _updatePosition();
+	void _checkTilePosition(const Map&, std::vector<sf::Vector2f>&, float, float);
+	void _collideWithTile(sf::Vector2f);
+	sf::Vector2f _oldPos;
 };
 
 #endif /* Player_hpp */

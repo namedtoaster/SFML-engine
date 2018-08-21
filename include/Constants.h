@@ -20,13 +20,13 @@ const int VIEW_HEIGHT = HEIGHT;
 
 // Positioning constants
 const float MOVE_D = 5.0f;
-const float GRAVITY = 1.0f;
+const float GRAVITY = 1.f;
 const float JUMP_AMT = -15.0f;
 
 // Get a linking error with this for some reason
 //const char* PLAYER_TEXTURE = "pixar.jpg";
 const float PLAYER_START_X = 20.0f;
-const float PLAYER_START_Y = 200.0f;
+const float PLAYER_START_Y = 150.0f;
 
 // Tiling constants
 const int TILE_W_H = 50;
