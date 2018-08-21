@@ -23,6 +23,8 @@ public:
     bool isJumping();
     void moveRight();
     void moveLeft();
+	void moveDown();
+	void moveUp();
     void jump();
     void setVelY(float);
     sf::Vector2f getPosition();

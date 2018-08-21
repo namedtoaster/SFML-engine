@@ -23,6 +23,7 @@ Game::~Game() {
 void Game::run() {
     while (_window.isOpen()) {
         _processEvents();
+		_player.checkCollisions(_map);
         _draw();
     }
 }
@@ -74,6 +75,13 @@ void Game::_processEvents() {
     }
     
     // Movement
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+		_player.moveUp();
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+		_player.moveDown();
+	}
     
     // Move right
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && _player.getPosition().x < _bgWidth - _player.getSize().x / 2)
@@ -120,8 +128,6 @@ void Game::_processEvents() {
         
         // TODO: Prevent the window from being shurnk smaller than the height of the map and a set width
     }
-
-	_player.checkCollisions(_map);
 }
 
 void Game::_updateViewPos() {

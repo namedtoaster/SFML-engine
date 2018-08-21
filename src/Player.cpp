@@ -43,13 +43,19 @@ Player::Player() : _posX(PLAYER_START_X), _posY(PLAYER_START_Y), _isJumping(fals
 }
 
 void Player::moveRight() {
-    _posX += MOVE_D;
-    _setPosition(_posX, _posY);
+	_posX += MOVE_D;
 }
 
 void Player::moveLeft() {
     _posX -= MOVE_D;
-    _setPosition(_posX, _posY);
+}
+
+void Player::moveUp() {
+	_posY -= MOVE_D;
+}
+
+void Player::moveDown() {
+	_posY += MOVE_D;
 }
 
 sf::Sprite Player::getSprite() {
@@ -101,30 +107,24 @@ void Player::checkCollisions(Map &map) {
 		}
 		if (_isColliding) break;
 	}
-	_posText.setString("left: " + std::to_string(colliding.left)
-		+ " right: " + std::to_string(colliding.right)
-		+ " top: " + std::to_string(colliding.up)
-		+ " bot: " + std::to_string(colliding.down));
+	_posText.setString("col dwn: " + std::to_string(colliding.down)
+	+ "col lft: " + std::to_string(colliding.left)
+	+ "col r: " + std::to_string(colliding.right)
+	+ "col bot: " + std::to_string(colliding.down));
 
 	_updatePosition();
 }
 
 void Player::_updatePosition() {
     
-    //_velX += _accelX; // already done in move function
-    //_velY += _accelY;
-    
-    //_posX += _velX;
-
-	_oldPos.y = _posY;
-
-	_velY += GRAVITY;
-
-    _posY += _velY;
-
-	if (colliding.down) {
-		_posY = _oldPos.y;
+	/*if (_posY < PLAYER_START_Y)                  //If you are above ground
+		_velY += GRAVITY;    //Add gravity
+	else if (_posY > PLAYER_START_Y) {             //If you are below ground
+		_isJumping = false;
+		_posY = PLAYER_START_Y;                 //That's not supposed to happen, put him back up
 	}
+
+	_posY += _velY;*/
     
     // Update the player's position
     _setPosition(_posX, _posY);
