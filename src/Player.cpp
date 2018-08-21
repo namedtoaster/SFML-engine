@@ -10,6 +10,7 @@
 #include "Map.hpp"
 #include "Tile.h"
 #include <iostream>
+#include <algorithm>
 
 Player::Player() : _posX(PLAYER_START_X), _posY(PLAYER_START_Y), _isJumping(false), _velX(0.0f), _velY(0.0f), _accelX(0.0f), _accelY(0.0f) {
     if (!_texture.loadFromFile("pixar.jpg")) {
@@ -75,57 +76,69 @@ void Player::jump() {
     _isJumping = true;
 }
 
-void Player::checkCollisions(Map &map) {
-	_isColliding = false;
-	colliding.up = false;
-	colliding.down = false;
-	colliding.left = false;
-	colliding.right = false;
+void Player::checkCollisions(const Map &map) {
+	std::vector<sf::Vector2f> collideTilePosition;
 
-	sf::FloatRect object = _sprite.getGlobalBounds();
-	int leftTile = object.left / TILE_W_H;
-	int rightTile = (object.left + object.width) / TILE_W_H;
-	int topTile = object.top / TILE_W_H;
-	int botTile = (object.top + object.height) / TILE_W_H;
+	float playerW = _sprite.getGlobalBounds().width;
+	// Check four corners
+	_checkTilePosition(map, collideTilePosition, _posX, _posY);
+	_checkTilePosition(map, collideTilePosition, _posX + playerW, _posY);
+	_checkTilePosition(map, collideTilePosition, _posX, _posY + playerW);
+	_checkTilePosition(map, collideTilePosition, _posX + playerW, _posY + playerW);
+		
 
-	for (int i = topTile; i <= botTile; i++)
-	{
-		for (int j = leftTile; j <= rightTile; j++)
-		{
-			Tile t = map._tiles[i][j];
-			if (t.tileType != 0)
-			{
-				_isColliding = true;
-
-				if (i == topTile) colliding.up = true;
-				if (i == botTile) colliding.down = true;
-				if (j == leftTile) colliding.left = true;
-				if (j == rightTile) colliding.right = true;
-
-				if (_isColliding) break;
-			}
-		}
-		if (_isColliding) break;
+	for (int i = 0; i < collideTilePosition.size(); i++) {
+		_collideWithTile(collideTilePosition[i]);
 	}
-	_posText.setString("col dwn: " + std::to_string(colliding.down)
-	+ "col lft: " + std::to_string(colliding.left)
-	+ "col r: " + std::to_string(colliding.right)
-	+ "col bot: " + std::to_string(colliding.down));
 
 	_updatePosition();
 }
 
-void Player::_updatePosition() {
-    
-	/*if (_posY < PLAYER_START_Y)                  //If you are above ground
-		_velY += GRAVITY;    //Add gravity
-	else if (_posY > PLAYER_START_Y) {             //If you are below ground
-		_isJumping = false;
-		_posY = PLAYER_START_Y;                 //That's not supposed to happen, put him back up
-	}
+void Player::_checkTilePosition(const Map& map,
+	std::vector<sf::Vector2f>& collideTilePosition, 
+	float x, float y) {
 
-	_posY += _velY;*/
-    
+	sf::Vector2i cornerPos = sf::Vector2i(floor(x / TILE_W_H), floor(y / TILE_W_H));
+
+	if (map._tiles[cornerPos.y][cornerPos.x].tileType != 0) {
+		collideTilePosition.push_back(sf::Vector2f((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2), (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2)));
+		_posText.setString("x: " + std::to_string(collideTilePosition[0].x));
+	}
+}
+
+void Player::_collideWithTile(sf::Vector2f pos) {
+	const float playerRadius = (float)_sprite.getGlobalBounds().width / 2.f;
+	const float tileRadius = (float)TILE_W_H / 2.f;
+	const float minDistance = playerRadius + tileRadius;
+
+	sf::Vector2f centerPlayerPos = sf::Vector2f(_posX, _posY) 
+		+ sf::Vector2f(playerRadius, playerRadius);
+	sf::Vector2f distVec = centerPlayerPos - pos;
+
+	float xdepth = minDistance - abs(distVec.x);
+	float ydepth = minDistance - abs(distVec.y);
+
+	if (xdepth > 0 || ydepth > 0) {
+		if (std::max(xdepth, 0.f) < std::max(ydepth, 0.f)) {
+			if (distVec.x < 0) {
+				_posX -= xdepth;
+			}
+			else {
+				_posX += xdepth;
+			}
+		}
+		else {
+			if (distVec.y < 0) {
+				_posY -= ydepth;
+			}
+			else {
+				_posY += ydepth;
+			}
+		}
+	}
+}
+
+void Player::_updatePosition() {
     // Update the player's position
     _setPosition(_posX, _posY);
 
@@ -135,10 +148,6 @@ void Player::_updatePosition() {
 
 sf::Vector2f Player::getPosition() {
     return sf::Vector2f(_posX, _posY);
-}
-
-void Player::setVelY(float newY) {
-    _velY = newY;
 }
 
 bool Player::isJumping() {
