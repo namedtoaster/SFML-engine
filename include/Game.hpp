@@ -32,7 +32,7 @@ private:
     void _init();
     void _processEvents();
     void _addSprite(const char*);
-    void _updateViewPos();
+    void _updateView();
     void _updateTextPos();
     void _draw();
     void _drawPlayer();

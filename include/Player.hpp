@@ -20,15 +20,14 @@ public:
     // Member methods
     
         // Movement
-    bool isJumping();
+    bool isFalling();
     void moveRight();
     void moveLeft();
 	void moveDown();
 	void moveUp();
     void jump();
-    void setVelY(float);
     sf::Vector2f getPosition();
-	void checkCollisions(Map&);
+	void update(const Map&);
     
         // Drawing
     sf::Sprite getSprite();
@@ -48,15 +47,7 @@ private:
     float _accelY;
     int _texWidth;
     int _texHeight;
-    bool _isJumping;
-	bool _isColliding;
-
-	struct {
-		bool up;
-		bool down;
-		bool left;
-		bool right;
-	} colliding;
+    bool _falling;
     
         // Drawing
     sf::Sprite _sprite;
@@ -68,8 +59,11 @@ private:
     
         // Movement
     void _setPosition(float, float);
+	void _applyGravity();
+	void _checkCollisions(const Map&);
+	void _checkTilePosition(const Map&, std::vector<sf::Vector2f>&, float, float);
+	void _collideWithTile(sf::Vector2f);
 	void _updatePosition();
-	sf::Vector2f _oldPos;
 };
 
 #endif /* Player_hpp */
