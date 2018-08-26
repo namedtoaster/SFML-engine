@@ -110,7 +110,7 @@ void Player::_checkTilePosition(const Map& map,
 	std::vector<sf::Vector2f>& collideTilePosition, 
 	float x, float y) {
 
-	sf::Vector2i cornerPos = sf::Vector2i(floor(x / TILE_W_H), floor(y / TILE_W_H));
+	sf::Vector2i cornerPos = sf::Vector2i(std::floor(x / TILE_W_H), std::floor(y / TILE_W_H));
 
 	if (map._tiles[cornerPos.y][cornerPos.x].tileType != 0) {
 		collideTilePosition.push_back(sf::Vector2f((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2), (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2)));
