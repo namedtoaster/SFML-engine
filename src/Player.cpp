@@ -11,6 +11,7 @@
 #include "Tile.h"
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 
 Player::Player() : _posX(PLAYER_START_X), _posY(PLAYER_START_Y), _falling(true), _velX(0.0f), _velY(0.0f), _accelX(0.0f), _accelY(0.0f) {
     if (!_texture.loadFromFile("assets/steve.png")) {
