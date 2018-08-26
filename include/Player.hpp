@@ -26,8 +26,9 @@ public:
 	void moveDown();
 	void moveUp();
     void jump();
+    void setVelY(float);
     sf::Vector2f getPosition();
-	void checkCollisions(const Map&);
+	void checkCollisions(Map&);
     
         // Drawing
     sf::Sprite getSprite();
@@ -68,8 +69,6 @@ private:
         // Movement
     void _setPosition(float, float);
 	void _updatePosition();
-	void _checkTilePosition(const Map&, std::vector<sf::Vector2f>&, float, float);
-	void _collideWithTile(sf::Vector2f);
 	sf::Vector2f _oldPos;
 };
 
