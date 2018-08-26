@@ -13,20 +13,20 @@
 #include <algorithm>
 
 Player::Player() : _posX(PLAYER_START_X), _posY(PLAYER_START_Y), _falling(true), _velX(0.0f), _velY(0.0f), _accelX(0.0f), _accelY(0.0f) {
-    if (!_texture.loadFromFile("pixar.jpg")) {
+    if (!_texture.loadFromFile("assets/steve.png")) {
       return;
     }
     
     // Initialize sprite/texture
     _sprite.setTexture(_texture);
-    _sprite.scale(0.5f, 0.5f);
+    _sprite.scale(0.3f, 0.3f);
     
     // Initialize members vars
     _texWidth = _texture.getSize().x;
     _texHeight = _texture.getSize().y;
 
 	// Load the text
-	_posFont.loadFromFile("chintzy.ttf");
+	_posFont.loadFromFile("assets/chintzy.ttf");
 	_posText.setString(std::to_string((int)_sprite.getPosition().x) + ", " + std::to_string((int)_sprite.getPosition().y));
 	_posText.setPosition(_posX, _posY - 20);
 	_posText.setFont(_posFont);
@@ -90,6 +90,8 @@ void Player::_checkCollisions(const Map &map) {
 
 	// TODO: set member var for player w/h
 	float playerW = _sprite.getGlobalBounds().width;
+	float playerH = _sprite.getGlobalBounds().height;
+
 	// Check four corners
 	_checkTilePosition(map, collideTilePosition, _posX, _posY);
 	_checkTilePosition(map, collideTilePosition, _posX + playerW, _posY);
@@ -152,9 +154,6 @@ void Player::_collideWithTile(sf::Vector2f pos) {
 void Player::_updatePosition() {
     // Update the player's position
     _setPosition(_posX, _posY);
-
-	// ...and the text (testing)
-	_posText.setPosition(_posX, _posY - 20);
 }
 
 sf::Vector2f Player::getPosition() {

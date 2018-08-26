@@ -9,7 +9,7 @@
 #include "Game.hpp"
 //#include "Constants.h"
 
-Game::Game() : _window(sf::VideoMode(WIDTH, HEIGHT), "SFML test"), _map("data") {
+Game::Game() : _window(sf::VideoMode(WIDTH, HEIGHT), "SFML test"), _map("assets/data") {
     _state = PLAY;
     _isJumping = false;
     _init();
@@ -24,6 +24,7 @@ void Game::run() {
     while (_window.isOpen()) {
         _processEvents();
 		_player.update(_map);
+		_updateView();
         _draw();
     }
 }
@@ -35,21 +36,21 @@ void Game::_init() {
     
     // Set the Icon
     sf::Image icon;
-    if (!icon.loadFromFile("icon.png")) {
+    if (!icon.loadFromFile("assets/icon.png")) {
       return;
     }
     _window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     
     // Load the text
-    _font.loadFromFile("chintzy.ttf");
+    _font.loadFromFile("assets/chintzy.ttf");
     _text.setString("Hello world");
     _text.setFont(_font);
     _text.setCharacterSize(30);
     _text.setStyle(sf::Text::Bold);
     _text.setFillColor(sf::Color::Yellow);
-    
-    // Initialize the view to always be in the center of the screen, regardless of the size of the window. This will be called when resizing the window as well
-    _updateViewPos();
+
+	// Zoom in a bit
+	_view.zoom(0.5f);
 
 
 
@@ -76,45 +77,18 @@ void Game::_processEvents() {
 
     
     // Movement
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-		_player.moveUp();
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-		_player.moveDown();
-	}
     
     // Move right
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && _player.getPosition().x < _bgWidth - _player.getSize().x / 2)
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && _player.getPosition().x < _bgWidth - _player.getSize().x / 2)
     {
         // Update the player position
         _player.moveRight();
-        
-        // 1. If the player is beyond one half of the screen width
-        if (_player.getPosition().x > _view.getCenter().x) {
-            // 2. If the player is not beyond half a screen width distance from the right side of the map
-            if (_player.getPosition().x < _bgWidth - _window.getSize().x / 2) {
-                _view.move(MOVE_D, 0.0f);
-            }
-        }
     }
     // Move left
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && _player.getPosition().x > PLAYER_START_X)
     {
         // Update the player position
         _player.moveLeft();
-        
-        // Update the view
-        
-        // 1. If the player is not beyond the far left side of the map
-        if (_player.getPosition().x > PLAYER_START_X) {
-            // 2. If the player is at the left side of the screen
-            if (_player.getPosition().x < _view.getCenter().x - _window.getSize().x / 2 + PLAYER_START_X) {
-                // 3. If the player within half the screen width of the far right of the map
-                if (_player.getPosition().x < _bgWidth - _window.getSize().x / 2)
-                    _view.move(-MOVE_D, 0.0f);
-            }
-        }
     }
     
     // Jump
@@ -125,14 +99,15 @@ void Game::_processEvents() {
     // Window resize
     if (event.type == sf::Event::Resized) {
         /// Update background position
-        _updateViewPos();
+        
         
         // TODO: Prevent the window from being shurnk smaller than the height of the map and a set width
     }
 }
 
-void Game::_updateViewPos() {
-	_view.reset(sf::FloatRect(0, 0, _window.getSize().x, _window.getSize().y));
+// Kep view centered around player
+void Game::_updateView() {
+	_view.setCenter(_player.getPosition().x, _player.getPosition().y);
 
     
     // Update the text positions
@@ -165,7 +140,6 @@ void Game::_draw() {
 
 void Game::_drawPlayer() {
     _window.draw(_player.getSprite());
-	_window.draw(_player.getPosText());
 }
 
 void Game::_drawText() {
