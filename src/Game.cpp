@@ -77,6 +77,16 @@ void Game::_processEvents() {
 
     
     // Movement
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && _player.getPosition().y > 0)
+	{
+		// Update the player position
+		_player.moveUp();
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	{
+		// Update the player position
+		_player.moveDown();
+	}
     
     // Move right
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && _player.getPosition().x < _bgWidth - _player.getSize().x / 2)
@@ -85,7 +95,7 @@ void Game::_processEvents() {
         _player.moveRight();
     }
     // Move left
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && _player.getPosition().x > PLAYER_START_X)
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && _player.getPosition().x > TILE_W_H)
     {
         // Update the player position
         _player.moveLeft();
@@ -171,7 +181,7 @@ bool Game::_rightSide()
 
 bool Game::_topSide()
 {
-	return (_player.getPosition().y < (_window.getSize().y / 2));
+	return (_player.getPosition().y < (_window.getSize().y / 2 - TILE_W_H));
 }
 
 bool Game::_bottomSide()

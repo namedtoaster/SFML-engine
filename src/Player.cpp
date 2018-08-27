@@ -94,10 +94,10 @@ void Player::_checkCollisions(const Map &map) {
 	float playerH = _sprite.getGlobalBounds().height;
 
 	// Check four corners
-	_checkTilePosition(map, collideTilePosition, _posX, _posY);
-	_checkTilePosition(map, collideTilePosition, _posX + playerW, _posY);
-	_checkTilePosition(map, collideTilePosition, _posX, _posY + playerW);
-	_checkTilePosition(map, collideTilePosition, _posX + playerW, _posY + playerW);
+	_checkTilePosition(map, collideTilePosition, _posX, _posY); // top left
+	_checkTilePosition(map, collideTilePosition, _posX + playerW, _posY); // top right
+	_checkTilePosition(map, collideTilePosition, _posX, _posY + playerW); // bottom left
+	_checkTilePosition(map, collideTilePosition, _posX + playerW, _posY + playerW); // bottom right
 		
 
 	for (int i = 0; i < collideTilePosition.size(); i++) {
