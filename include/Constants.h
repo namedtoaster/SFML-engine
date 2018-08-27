@@ -26,7 +26,7 @@ const float JUMP_AMT = -16.0f;
 // Get a linking error with this for some reason
 //const char* PLAYER_TEXTURE = "pixar.jpg";
 const float PLAYER_START_X = 40.0f;
-const float PLAYER_START_Y = 150.0f;
+const float PLAYER_START_Y = 100.f;
 
 // Tiling constants
 const int TILE_W_H = 50;
