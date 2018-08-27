@@ -59,6 +59,9 @@ void Game::_init() {
     run();
 }
 
+// TODO: Find a more elgant way of doing this
+bool canJump = true;
+
 void Game::_processEvents() {
     // Process events
     sf::Event event;
@@ -73,6 +76,13 @@ void Game::_processEvents() {
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
             _window.close();
         }
+
+		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space && canJump) {
+			_player.jump();
+			canJump = false;
+		}
+		if (event.type == sf::Event::KeyReleased)
+			canJump = true;
     }
 
     
@@ -102,9 +112,9 @@ void Game::_processEvents() {
     }
     
     // Jump
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !_player.isFalling()) {
+    /*(if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !_player.isFalling()) {
         _player.jump();
-    }
+    }*/
     
     // Window resize
     if (event.type == sf::Event::Resized) {
