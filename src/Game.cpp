@@ -111,15 +111,10 @@ void Game::_processEvents() {
         _player.moveLeft();
     }
     
-    // Jump
-    /*(if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !_player.isFalling()) {
-        _player.jump();
-    }*/
-    
     // Window resize
     if (event.type == sf::Event::Resized) {
-        /// Update background position
-        
+        sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+		_view.reset(visibleArea);
         
         // TODO: Prevent the window from being shurnk smaller than the height of the map and a set width
     }
@@ -130,14 +125,15 @@ void Game::_updateView() {
 	int x_pos = _player.getPosition().x;
 	int y_pos = _player.getPosition().y;
 
-	if (_leftSide())
+	// TODO: Maybe possibly make a way to take the borders into account -- for now, it's just too annoying
+	/*if (_leftSide())
 		x_pos = _window.getSize().x / 2 - TILE_W_H;
 	if (_topSide())
 		y_pos = _window.getSize().y / 2 - TILE_W_H;
 	if (_rightSide())
 		x_pos = _map._tiles[_player.getPosition().y / TILE_W_H].size() * TILE_W_H - (_window.getSize().x / 2) + TILE_W_H;
 	if (_bottomSide())
-		y_pos = _map._tiles.size() * TILE_W_H - _window.getSize().y / 2 + TILE_W_H;
+		y_pos = _map._tiles.size() * TILE_W_H - _window.getSize().y / 2 + TILE_W_H;*/
 
 
 	_view.setCenter(x_pos, y_pos);
@@ -163,6 +159,8 @@ void Game::_draw() {
 
     // TODO: Create different functions for drawing the character, drawing enemies, drawing the onscreen text, and more. For now, everything is in one function
     _drawPlayer();
+
+	_window.setView(_window.getDefaultView());
     
     // Draw non-moving drawables (text)
     _drawText();
