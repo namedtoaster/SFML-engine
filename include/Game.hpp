@@ -42,6 +42,10 @@ private:
     void _drawText();
     bool _moveRight();
     bool _moveLeft();
+	bool _leftSide();
+	bool _rightSide();
+	bool _topSide();
+	bool _bottomSide();
     
     // Member variables
     int _bgWidth;

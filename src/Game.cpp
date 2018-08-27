@@ -107,7 +107,20 @@ void Game::_processEvents() {
 
 // Kep view centered around player
 void Game::_updateView() {
-	_view.setCenter(_player.getPosition().x, _player.getPosition().y);
+	int x_pos = _player.getPosition().x;
+	int y_pos = _player.getPosition().y;
+
+	if (_leftSide())
+		x_pos = _window.getSize().x / 2 - TILE_W_H;
+	if (_topSide())
+		y_pos = _window.getSize().y / 2 - TILE_W_H;
+	if (_rightSide())
+		x_pos = _map._tiles[_player.getPosition().y / TILE_W_H].size() * TILE_W_H - (_window.getSize().x / 2) + TILE_W_H;
+	if (_bottomSide())
+		y_pos = _map._tiles.size() * TILE_W_H - _window.getSize().y / 2 + TILE_W_H;
+
+
+	_view.setCenter(x_pos, y_pos);
 
     
     // Update the text positions
@@ -144,6 +157,26 @@ void Game::_drawPlayer() {
 
 void Game::_drawText() {
     _window.draw(_text);
+}
+
+bool Game::_leftSide()
+{
+	return (_player.getPosition().x < (_window.getSize().x / 2 - TILE_W_H));
+}
+
+bool Game::_rightSide()
+{
+	return (_player.getPosition().x > _map._tiles[_player.getPosition().y / TILE_W_H].size() * TILE_W_H - (_window.getSize().x / 2) + TILE_W_H);
+}
+
+bool Game::_topSide()
+{
+	return (_player.getPosition().y < (_window.getSize().y / 2));
+}
+
+bool Game::_bottomSide()
+{
+	return (_player.getPosition().y > (_map._tiles.size() * TILE_W_H - _window.getSize().y / 2 + TILE_W_H));
 }
 
 void Game::_drawBackground() {
