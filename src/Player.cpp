@@ -76,6 +76,7 @@ void Player::update(const Map& map) {
 }
 
 void Player::_applyGravity() {
+	_falling = false;
 	if (_falling) {
 		_velY += GRAVITY;
 		_posY += _velY;
@@ -98,6 +99,11 @@ void Player::_checkCollisions(const Map &map) {
 	_checkTilePosition(map, collideTilePosition, _posX + playerW, _posY); // top right
 	_checkTilePosition(map, collideTilePosition, _posX, _posY + playerW); // bottom left
 	_checkTilePosition(map, collideTilePosition, _posX + playerW, _posY + playerW); // bottom right
+
+	const float playerRadius = (float)_sprite.getGlobalBounds().width / 2.f;
+
+	sf::Vector2f centerPlayerPos = sf::Vector2f(_posX, _posY)
+		+ sf::Vector2f(playerRadius, playerRadius);
 		
 
 	for (int i = 0; i < collideTilePosition.size(); i++) {
@@ -112,6 +118,12 @@ void Player::_checkTilePosition(const Map& map,
 	float x, float y) {
 
 	sf::Vector2i cornerPos = sf::Vector2i(std::floor(x / TILE_W_H), std::floor(y / TILE_W_H));
+
+	for (int i = 0; i < collideTilePosition.size(); i++) {
+		if (collideTilePosition[i].x == ((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2))
+			&& collideTilePosition[i].y == (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2))
+			return;
+	}
 
 	if (map._tiles[cornerPos.y][cornerPos.x].tileType != 0) {
 		collideTilePosition.push_back(sf::Vector2f((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2), (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2)));
