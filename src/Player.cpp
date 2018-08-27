@@ -76,7 +76,6 @@ void Player::update(const Map& map) {
 }
 
 void Player::_applyGravity() {
-	_falling = false;
 	if (_falling) {
 		_velY += GRAVITY;
 		_posY += _velY;
@@ -101,29 +100,39 @@ void Player::_checkCollisions(const Map &map) {
 	_checkTilePosition(map, collideTilePosition, _posX + playerW, _posY + playerW); // bottom right
 
 	const float playerRadius = (float)_sprite.getGlobalBounds().width / 2.f;
+	const float tileRadius = (float)TILE_W_H / 2.f;
+	sf::Vector2f centerPlayerPos = sf::Vector2f(_posX, _posY) + sf::Vector2f(playerRadius, playerRadius);
 
-	sf::Vector2f centerPlayerPos = sf::Vector2f(_posX, _posY)
-		+ sf::Vector2f(playerRadius, playerRadius);
-		
+	// Sort coords by closest to player center pos
+	// TODO: This would be so much easier if I was using glm and had built in sorting functions...
+	for (int i = 0; i < collideTilePosition.size(); i++) {
+		for (int j = i + 1; j < collideTilePosition.size(); j++) {
+			sf::Vector2f diffVec1 = centerPlayerPos - collideTilePosition[i];
+			float diff1 = std::sqrt(std::pow(diffVec1.x, 2.f) + std::pow(diffVec1.y, 2.f));
+
+			sf::Vector2f diffVec2 = centerPlayerPos - collideTilePosition[j];
+			float diff2 = std::sqrt(std::pow(diffVec2.x, 2.f) + std::pow(diffVec2.y, 2.f));
+
+			if (diff2 < diff1) {
+				sf::Vector2f tmp = collideTilePosition[i];
+				collideTilePosition[i] = collideTilePosition[j];
+				collideTilePosition[j] = tmp;
+			}
+		}
+
+	}
 
 	for (int i = 0; i < collideTilePosition.size(); i++) {
 		_collideWithTile(collideTilePosition[i]);
 	}
+	std::cout << std::endl;
 
 	_updatePosition();
 }
 
-void Player::_checkTilePosition(const Map& map,
-	std::vector<sf::Vector2f>& collideTilePosition, 
-	float x, float y) {
+void Player::_checkTilePosition(const Map& map, std::vector<sf::Vector2f>& collideTilePosition, float x, float y) {
 
 	sf::Vector2i cornerPos = sf::Vector2i(std::floor(x / TILE_W_H), std::floor(y / TILE_W_H));
-
-	for (int i = 0; i < collideTilePosition.size(); i++) {
-		if (collideTilePosition[i].x == ((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2))
-			&& collideTilePosition[i].y == (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2))
-			return;
-	}
 
 	if (map._tiles[cornerPos.y][cornerPos.x].tileType != 0) {
 		collideTilePosition.push_back(sf::Vector2f((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2), (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2)));
