@@ -87,7 +87,7 @@ void Game::_processEvents() {
 
     
     // Movement
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
 		// Update the player position
 		_player.moveUp();
@@ -96,7 +96,7 @@ void Game::_processEvents() {
 	{
 		// Update the player position
 		_player.moveDown();
-	}
+	}*/
     
     // Move right
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))

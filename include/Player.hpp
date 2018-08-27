@@ -32,6 +32,7 @@ public:
         // Drawing
     sf::Sprite getSprite();
 	sf::Text getPosText();
+	void testDraw(sf::RenderWindow&);
     
         // Tex/Sprite data
     sf::Vector2u getSize();
@@ -41,6 +42,8 @@ private:
         // Movement
     float _posX;
     float _posY;
+	float _width;
+	float _height;
     float _velX;
     float _velY;
     float _accelX;
