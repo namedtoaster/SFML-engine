@@ -20,11 +20,13 @@ Player::Player() : _posX(PLAYER_START_X), _posY(PLAYER_START_Y), _falling(true),
     
     // Initialize sprite/texture
     _sprite.setTexture(_texture);
-    _sprite.scale(0.3f, 0.3f);
+    _sprite.scale(0.15f, 0.15f);
     
     // Initialize members vars
     _texWidth = _texture.getSize().x;
     _texHeight = _texture.getSize().y;
+	_width = _sprite.getGlobalBounds().width;
+	_height = _sprite.getGlobalBounds().height;
 
 	// Load the text
 	_posFont.loadFromFile("assets/chintzy.ttf");
@@ -60,6 +62,19 @@ sf::Text Player::getPosText() {
 	return _posText;
 }
 
+void Player::testDraw(sf::RenderWindow &_window)
+{
+	sf::Vector2f centerPlayerPos = sf::Vector2f(_posX - 5.f, _posY - 5.f) + sf::Vector2f(_width / 2.f, _height / 2.f);
+
+	sf::CircleShape shape(5);
+
+	// set the shape color to green
+	shape.setFillColor(sf::Color(100, 250, 50));
+	shape.setPosition(centerPlayerPos);
+
+	_window.draw(shape);
+}
+
 void Player::_setPosition(float x, float y) {
     _sprite.setPosition(x, y);
 }
@@ -89,19 +104,14 @@ void Player::_applyGravity() {
 void Player::_checkCollisions(const Map &map) {
 	std::vector<sf::Vector2f> collideTilePosition;
 
-	// TODO: set member var for player w/h
-	float playerW = _sprite.getGlobalBounds().width;
-	float playerH = _sprite.getGlobalBounds().height;
-
 	// Check four corners
 	_checkTilePosition(map, collideTilePosition, _posX, _posY); // top left
-	_checkTilePosition(map, collideTilePosition, _posX + playerW, _posY); // top right
-	_checkTilePosition(map, collideTilePosition, _posX, _posY + playerW); // bottom left
-	_checkTilePosition(map, collideTilePosition, _posX + playerW, _posY + playerW); // bottom right
+	_checkTilePosition(map, collideTilePosition, _posX + _width, _posY); // top right
+	_checkTilePosition(map, collideTilePosition, _posX, _posY + _height); // bottom left
+	_checkTilePosition(map, collideTilePosition, _posX + _width, _posY + _height); // bottom right
 
-	const float playerRadius = (float)_sprite.getGlobalBounds().width / 2.f;
 	const float tileRadius = (float)TILE_W_H / 2.f;
-	sf::Vector2f centerPlayerPos = sf::Vector2f(_posX, _posY) + sf::Vector2f(playerRadius, playerRadius);
+	sf::Vector2f centerPlayerPos = sf::Vector2f(_posX, _posY) + sf::Vector2f(_width / 2.f, _height / 2.f);
 
 	// Sort coords by closest to player center pos
 	// TODO: This would be so much easier if I was using glm and had built in sorting functions...
@@ -125,7 +135,6 @@ void Player::_checkCollisions(const Map &map) {
 	for (int i = 0; i < collideTilePosition.size(); i++) {
 		_collideWithTile(collideTilePosition[i]);
 	}
-	std::cout << std::endl;
 
 	_updatePosition();
 }
@@ -141,16 +150,15 @@ void Player::_checkTilePosition(const Map& map, std::vector<sf::Vector2f>& colli
 }
 
 void Player::_collideWithTile(sf::Vector2f pos) {
-	const float playerRadius = (float)_sprite.getGlobalBounds().width / 2.f;
 	const float tileRadius = (float)TILE_W_H / 2.f;
-	const float minDistance = playerRadius + tileRadius;
+	const float minDistanceX = _width / 2 + tileRadius;
+	const float minDistanceY = _height / 2 + tileRadius;
 
-	sf::Vector2f centerPlayerPos = sf::Vector2f(_posX, _posY) 
-		+ sf::Vector2f(playerRadius, playerRadius);
+	sf::Vector2f centerPlayerPos = sf::Vector2f(_posX, _posY) + sf::Vector2f(_width / 2.f, _height / 2.f);
 	sf::Vector2f distVec = centerPlayerPos - pos;
 
-	float xdepth = minDistance - abs(distVec.x);
-	float ydepth = minDistance - abs(distVec.y);
+	float xdepth = minDistanceX - abs(distVec.x);
+	float ydepth = minDistanceY - abs(distVec.y);
 
 	if (xdepth > 0 || ydepth > 0) {
 		if (std::max(xdepth, 0.f) < std::max(ydepth, 0.f)) {
