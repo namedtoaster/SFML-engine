@@ -11,13 +11,9 @@
 #include <iostream>
 
 Map::Map(const std::string &filename) {
-    // load the file
-		// read the metadata
-		// TODO: create some standardization of what is in the metadata to include number of sprites
     std::ifstream input(filename);
     std::string line;
-    
-		// read the data
+
 	int i = 0;
     while (getline(input, line)) {
 		_tiles.push_back(std::vector<Tile>());
@@ -47,4 +43,13 @@ std::vector<sf::Sprite> Map::getSprites() {
 
 sf::Texture* Map::getTextures() {
 	return _textures;
+}
+
+void Map::draw(sf::RenderWindow &window) {
+	for (int i = 0; i < _tiles.size(); i++) {
+		for (int j = 0; j < _tiles[i].size(); j++) {
+			_sprites[_tiles[i][j].tileType].setPosition(_tiles[i][j].x, _tiles[i][j].y);
+			window.draw(_sprites[_tiles[i][j].tileType]);
+		}
+	}
 }

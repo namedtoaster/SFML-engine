@@ -13,81 +13,85 @@
 #include <algorithm>
 #include <cmath>
 
-Player::Player() : _posX(PLAYER_START_X), _posY(PLAYER_START_Y), _falling(true), _velX(0.0f), _velY(0.0f), _accelX(0.0f), _accelY(0.0f) {
-    if (!_texture.loadFromFile("assets/steve.png")) {
+Player::Player() :
+	_posX(PLAYER_START_X),
+	_posY(PLAYER_START_Y),
+	_falling(true),
+	_velX(0.0f),
+	_velY(0.0f),
+	_accelX(0.0f),
+	_accelY(0.0f),
+	_animation(sf::Vector2u(8, 9), 0.15f),
+	_canJump(true)
+{
+    if (!_texture.loadFromFile("assets/dude_animation_sheet.png")) {
       return;
     }
+	_animation.setTexture(_texture);
     
     // Initialize sprite/texture
     _sprite.setTexture(_texture);
-    _sprite.scale(0.15f, 0.15f);
-    
+
     // Initialize members vars
     _texWidth = _texture.getSize().x;
     _texHeight = _texture.getSize().y;
-	_width = _sprite.getGlobalBounds().width;
-	_height = _sprite.getGlobalBounds().height;
-
-	// Load the text
-	_posFont.loadFromFile("assets/chintzy.ttf");
-	_posText.setString(std::to_string((int)_sprite.getPosition().x) + ", " + std::to_string((int)_sprite.getPosition().y));
-	_posText.setPosition(_posX, _posY - 20);
-	_posText.setFont(_posFont);
-	_posText.setCharacterSize(20);
-	_posText.setStyle(sf::Text::Bold);
-	_posText.setFillColor(sf::Color::Red);
+	_width = _animation.uvRect.width;
+	_height = _animation.uvRect.height;
 }
 
-void Player::moveRight() {
+void Player::update(sf::RenderWindow &window, const Map& map, sf::Event &event, float deltaTime) {
+	_move(window, event, deltaTime);
+	_applyGravity();
+	_checkCollisions(map); // TODO: make work when player is bigger than tiles -- super buggy when it is right now
+	_updatePosition();
+	_sprite.setTextureRect(_animation.uvRect);
+}
+
+void Player::_move(sf::RenderWindow &window, sf::Event &event, float deltaTime) {
+	_animation.update(0, 0.02f, false);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+		_jump();
+	}
+
+	// Move right
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	{
+		// Update the player position
+		_moveRight();
+		_animation.update(1, 0.02f, false);
+	}
+	// Move left
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	{
+		// Update the player position
+		_moveLeft();
+		_animation.update(2, 0.02f, false);
+	}
+}
+
+// TODO: get delta from main update function 
+// - multiply it by a speed variable to get new pos 
+// (see animation SFML tutorial on youtube)
+void Player::_moveRight() {
 	_posX += MOVE_D;
 }
 
-void Player::moveLeft() {
-    _posX -= MOVE_D;
+void Player::_moveLeft() {
+	_posX -= MOVE_D;
 }
 
-void Player::moveUp() {
+void Player::_moveUp() {
 	_posY -= MOVE_D;
 }
 
-void Player::moveDown() {
+void Player::_moveDown() {
 	_posY += MOVE_D;
 }
 
-sf::Sprite Player::getSprite() {
-    return _sprite;
-}
-
-sf::Text Player::getPosText() {
-	return _posText;
-}
-
-void Player::testDraw(sf::RenderWindow &_window)
-{
-	sf::Vector2f centerPlayerPos = sf::Vector2f(_posX - 5.f, _posY - 5.f) + sf::Vector2f(_width / 2.f, _height / 2.f);
-
-	sf::CircleShape shape(5);
-
-	// set the shape color to green
-	shape.setFillColor(sf::Color(100, 250, 50));
-	shape.setPosition(centerPlayerPos);
-
-	_window.draw(shape);
-}
-
-void Player::_setPosition(float x, float y) {
-    _sprite.setPosition(x, y);
-}
-
-void Player::jump() {
-    _velY = JUMP_AMT;
+void Player::_jump() {
+	_velY = JUMP_AMT;
 	_falling = true;
-}
-
-void Player::update(const Map& map) {
-	_applyGravity();
-	_checkCollisions(map);
-	_updatePosition();
 }
 
 void Player::_applyGravity() {
@@ -106,9 +110,29 @@ void Player::_checkCollisions(const Map &map) {
 
 	// Check four corners
 	_checkTilePosition(map, collideTilePosition, _posX, _posY); // top left
-	_checkTilePosition(map, collideTilePosition, _posX + _width, _posY); // top right
-	_checkTilePosition(map, collideTilePosition, _posX, _posY + _height); // bottom left
-	_checkTilePosition(map, collideTilePosition, _posX + _width, _posY + _height); // bottom right
+	_checkTilePosition(map, collideTilePosition, _posX + _width, _posY);
+	_checkTilePosition(map, collideTilePosition, _posX, _posY + _height);
+	_checkTilePosition(map, collideTilePosition, _posX + _width, _posY + _height);
+
+	// Check top edge to top right
+	for (int i = _posX + TILE_W_H; i < (_width + _posX); i += TILE_W_H) {
+		_checkTilePosition(map, collideTilePosition, i, _posY);
+	}
+	// Check left edge to bottom left
+	for (int i = _posY + TILE_W_H; i < (_height + _posY); i += TILE_W_H) {
+		_checkTilePosition(map, collideTilePosition, _posX, i);
+	}
+	// Check bottom edge to bottom right
+	int bottomY = _posY + _height;
+	for (int i = _posX + TILE_W_H; i < (_width + _posX); i += TILE_W_H) {
+		_checkTilePosition(map, collideTilePosition, i, bottomY);
+	}
+	// Check right edge to bottom right
+	int rightX = _posX + _width;
+	for (int i = _posY + TILE_W_H; i < (_height + _posY); i += TILE_W_H) {
+		_checkTilePosition(map, collideTilePosition, rightX, i);
+	}
+
 
 	const float tileRadius = (float)TILE_W_H / 2.f;
 	sf::Vector2f centerPlayerPos = sf::Vector2f(_posX, _posY) + sf::Vector2f(_width / 2.f, _height / 2.f);
@@ -181,19 +205,23 @@ void Player::_collideWithTile(sf::Vector2f pos) {
 	}
 }
 
+sf::Vector2f Player::getPosition() {
+	return sf::Vector2f(_posX, _posY);
+}
+
 void Player::_updatePosition() {
     // Update the player's position
     _setPosition(_posX, _posY);
 }
 
-sf::Vector2f Player::getPosition() {
-    return sf::Vector2f(_posX, _posY);
+void Player::_setPosition(float x, float y) {
+	_sprite.setPosition(x, y);
 }
 
-bool Player::isFalling() {
-    return _falling;
-}
-
-sf::Vector2u Player::getSize() {
-    return _texture.getSize();
+void Player::draw(sf::RenderWindow &window)
+{
+	sf::RectangleShape rectangle(sf::Vector2f(_width, _height));
+	rectangle.setPosition(_posX, _posY);
+	//window.draw(rectangle);
+	window.draw(_sprite);
 }

@@ -24,47 +24,25 @@ enum GameState { PLAY, QUIT };
 class Game {
 public:
     Game();
-    ~Game();
-    
+ 
     void run();
+
 private:
-    // Member methods
     void _init();
     void _processEvents();
-    void _addSprite(const char*);
+	void _updateWindow();
     void _updateView();
-    void _updateTextPos();
+	void _updatePlayers();
     void _draw();
-    void _drawPlayer();
-    void _drawSprites();
-    void _drawBackground();
-    void _drawTiles();
-    void _drawText();
-    bool _moveRight();
-    bool _moveLeft();
-	bool _leftSide();
-	bool _rightSide();
-	bool _topSide();
-	bool _bottomSide();
-    
-    // Member variables
-    int _bgWidth;
-    int _bgHeight;
+private:
+	float _deltaTime;
     bool _isJumping;
-    sf::Image _icon;
     sf::RenderWindow _window;
-    sf::Music _backgroundMusic;
-    sf::Font _font;
-    sf::Text _text;
     sf::View _view;
-    sf::Sprite _background;
-    sf::Texture _bgTexture;
+	sf::Clock _clock;
     Player _player;
     GameState _state;
     Map _map;
-    std::vector<sf::Sprite*> _sprites;
-
-	// Friend classes
 	friend class Player;
 };
 

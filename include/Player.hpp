@@ -11,35 +11,30 @@
 
 #include "Constants.h"
 #include "Map.hpp"
+#include "Animation.h"
 
 class Player {
 public:
-    // Default constructor
     Player();
     
-    // Member methods
-    
-        // Movement
-    bool isFalling();
-    void moveRight();
-    void moveLeft();
-	void moveDown();
-	void moveUp();
-    void jump();
+	void update(sf::RenderWindow&, const Map&, sf::Event&, float);
+	void draw(sf::RenderWindow&);
     sf::Vector2f getPosition();
-	void update(const Map&);
-    
-        // Drawing
-    sf::Sprite getSprite();
-	sf::Text getPosText();
-	void testDraw(sf::RenderWindow&);
-    
-        // Tex/Sprite data
-    sf::Vector2u getSize();
+
 private:
-    // Member variables
-    
-        // Movement
+	void _move(sf::RenderWindow&, sf::Event&, float);
+	void _moveRight();
+	void _moveLeft();
+	void _moveDown();
+	void _moveUp();
+	void _jump();
+	void _applyGravity();
+	void _checkCollisions(const Map&);
+	void _checkTilePosition(const Map&, std::vector<sf::Vector2f>&, float, float);
+	void _collideWithTile(sf::Vector2f);
+	void _setPosition(float, float);
+	void _updatePosition();
+private:
     float _posX;
     float _posY;
 	float _width;
@@ -51,22 +46,11 @@ private:
     int _texWidth;
     int _texHeight;
     bool _falling;
-    
-        // Drawing
+	bool _canJump;
     sf::Sprite _sprite;
-    sf::Texture _texture;
-	sf::Text _posText;
-	sf::Font _posFont;
-    
-    // Member methods
-    
-        // Movement
-    void _setPosition(float, float);
-	void _applyGravity();
-	void _checkCollisions(const Map&);
-	void _checkTilePosition(const Map&, std::vector<sf::Vector2f>&, float, float);
-	void _collideWithTile(sf::Vector2f);
-	void _updatePosition();
+	sf::Texture _texture;
+	Animation _animation;
+	friend class Animation;
 };
 
 #endif /* Player_hpp */
