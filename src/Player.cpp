@@ -21,10 +21,10 @@ Player::Player() :
 	_velY(0.0f),
 	_accelX(0.0f),
 	_accelY(0.0f),
-	_animation(sf::Vector2u(8, 9), 0.15f),
+	_animation(sf::Vector2u(7, 11), 0.15f),
 	_canJump(true)
 {
-    if (!_texture.loadFromFile("assets/dude_animation_sheet.png")) {
+    if (!_texture.loadFromFile("assets/adventurer-Sheet.png")) {
       return;
     }
 	_animation.setTexture(_texture);
@@ -48,7 +48,7 @@ void Player::update(sf::RenderWindow &window, const Map& map, sf::Event &event, 
 }
 
 void Player::_move(sf::RenderWindow &window, sf::Event &event, float deltaTime) {
-	_animation.update(0, 0.02f, false);
+	_animation.update(0, 0.01f, true);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 		_jump();
@@ -59,14 +59,14 @@ void Player::_move(sf::RenderWindow &window, sf::Event &event, float deltaTime) 
 	{
 		// Update the player position
 		_moveRight();
-		_animation.update(1, 0.02f, false);
+		_animation.update(1, 0.005f, true);
 	}
 	// Move left
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		// Update the player position
 		_moveLeft();
-		_animation.update(2, 0.02f, false);
+		_animation.update(1, 0.005f, false);
 	}
 }
 

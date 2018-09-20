@@ -19,7 +19,7 @@ const int VIEW_WIDTH = WIDTH;
 const int VIEW_HEIGHT = HEIGHT;
 
 // Positioning constants
-const float MOVE_D = 2.0f;
+const float MOVE_D = 3.0f;
 const float GRAVITY = 1.f;
 const float JUMP_AMT = -17.0f;
 
