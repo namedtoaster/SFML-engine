@@ -99,7 +99,7 @@ void Game::_draw() {
 	_window.setView(_view);
     
 	// Draw tiles
-	_map.draw(_window);
+	_map.draw(_window, false);
 
 	// Draw player
 	_player.draw(_window);

@@ -17,7 +17,7 @@ class Map {
 public:
     Map(const std::string&);
 
-	void draw(sf::RenderWindow&);
+	void draw(sf::RenderWindow&, bool);
 	sf::Texture* getTextures();
 	std::vector<sf::Sprite> getSprites();
 public:
