@@ -18,7 +18,7 @@ public:
     Player();
     
 	void update(sf::RenderWindow&, const Map&, sf::Event&, float);
-	void draw(sf::RenderWindow&);
+	void draw(sf::RenderWindow&, bool);
     sf::Vector2f getPosition();
 
 private:

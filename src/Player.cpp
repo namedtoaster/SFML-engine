@@ -218,10 +218,14 @@ void Player::_setPosition(float x, float y) {
 	_sprite.setPosition(x, y);
 }
 
-void Player::draw(sf::RenderWindow &window)
+void Player::draw(sf::RenderWindow &window, bool drawGrid)
 {
 	sf::RectangleShape rectangle(sf::Vector2f(_width, _height));
 	rectangle.setPosition(_posX, _posY);
 	//window.draw(rectangle);
 	window.draw(_sprite);
+
+	if (drawGrid) {
+
+	}
 }
