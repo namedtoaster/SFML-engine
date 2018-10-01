@@ -45,11 +45,27 @@ sf::Texture* Map::getTextures() {
 	return _textures;
 }
 
-void Map::draw(sf::RenderWindow &window) {
+void Map::draw(sf::RenderWindow &window, bool drawGrid) {
 	for (int i = 0; i < _tiles.size(); i++) {
 		for (int j = 0; j < _tiles[i].size(); j++) {
 			_sprites[_tiles[i][j].tileType].setPosition(_tiles[i][j].x, _tiles[i][j].y);
 			window.draw(_sprites[_tiles[i][j].tileType]);
+		}
+	}	
+
+	if (drawGrid) {
+		std::vector<std::vector<std::vector<sf::Vertex>>> _vertices;
+		for (int i = 0; i < _tiles.size(); i++) {
+			for (int j = 0; j < _tiles[i].size(); j++) {
+				sf::Vertex vertices[4] = {
+					sf::Vertex(sf::Vector2f(j * _tileW, i * _tileH)),
+					sf::Vertex(sf::Vector2f(j * _tileW + _tileW, i * _tileH)),
+					sf::Vertex(sf::Vector2f(j * _tileW + _tileW, i * _tileH + _tileH)),
+					sf::Vertex(sf::Vector2f(j * _tileW, i * _tileH + _tileH))
+				};
+
+				window.draw(vertices, 4, sf::LineStrip);
+			}
 		}
 	}
 }

@@ -78,12 +78,10 @@ void Game::_updateWindow() {
     }
 }
 
-// Kep view centered around player
+// Keep view centered around player
 void Game::_updateView() {
 	sf::Event event;
-	while (_window.pollEvent(event)) {
-		std::cout << "Hello" << std::endl;
-	}
+	
 	int x_pos = _player.getPosition().x;
 	int y_pos = _player.getPosition().y;
 
@@ -101,7 +99,7 @@ void Game::_draw() {
 	_window.setView(_view);
     
 	// Draw tiles
-	_map.draw(_window);
+	_map.draw(_window, false);
 
 	// Draw player
 	_player.draw(_window, true);
