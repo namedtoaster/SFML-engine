@@ -8,8 +8,10 @@ public:
 
 	void setTexture(sf::Texture&);
 	void update(int, float, bool);
+	void addAnimation(std::vector<sf::IntRect>);
 public:
 	sf::IntRect uvRect;
+	std::vector<std::vector<sf::IntRect>> frames;
 
 private:
 	sf::Vector2u imageCount;
