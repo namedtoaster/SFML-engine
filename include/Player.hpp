@@ -34,6 +34,7 @@ private:
 	void _collideWithTile(sf::Vector2f);
 	void _setPosition(float, float);
 	void _updatePosition();
+	void _flip();
 private:
     float _posX;
     float _posY;

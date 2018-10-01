@@ -40,10 +40,15 @@ Player::Player() :
 }
 
 void Player::update(sf::RenderWindow &window, const Map& map, sf::Event &event, float deltaTime) {
+	// Movement and collisions
 	_move(window, event, deltaTime);
 	_applyGravity();
 	_checkCollisions(map); // TODO: make work when player is bigger than tiles -- super buggy when it is right now
 	_updatePosition();
+	_width = _animation.uvRect.width;
+	_height = _animation.uvRect.height;
+
+	// Texture and images
 	_sprite.setTextureRect(_animation.uvRect);
 }
 
@@ -218,14 +223,14 @@ void Player::_setPosition(float x, float y) {
 	_sprite.setPosition(x, y);
 }
 
-void Player::draw(sf::RenderWindow &window, bool drawGrid)
+void Player::draw(sf::RenderWindow &window, bool drawBorder)
 {
 	sf::RectangleShape rectangle(sf::Vector2f(_width, _height));
 	rectangle.setPosition(_posX, _posY);
 	//window.draw(rectangle);
 	window.draw(_sprite);
 
-	if (drawGrid) {
+	if (drawBorder) {
 		sf::FloatRect border = _sprite.getGlobalBounds();
 		sf::Vertex vertices[5] = {sf::Vector2f(border.left, border.top), sf::Vector2f(border.left + border.width, border.top),
 			sf::Vector2f(border.left + border.width, border.top + border.height), sf::Vector2f(border.left, border.top + border.height),
