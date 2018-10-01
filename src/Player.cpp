@@ -226,6 +226,11 @@ void Player::draw(sf::RenderWindow &window, bool drawGrid)
 	window.draw(_sprite);
 
 	if (drawGrid) {
+		sf::FloatRect border = _sprite.getGlobalBounds();
+		sf::Vertex vertices[5] = {sf::Vector2f(border.left, border.top), sf::Vector2f(border.left + border.width, border.top),
+			sf::Vector2f(border.left + border.width, border.top + border.height), sf::Vector2f(border.left, border.top + border.height),
+			sf::Vector2f(border.left, border.top)};
 
+		window.draw(vertices, 5, sf::LinesStrip);
 	}
 }
