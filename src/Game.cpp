@@ -102,7 +102,7 @@ void Game::_draw() {
 	_map.draw(_window, false);
 
 	// Draw player
-	_player.draw(_window);
+	_player.draw(_window, true);
 
     // TODO: Create different functions for drawing the character, drawing enemies, drawing the onscreen text, and more
 

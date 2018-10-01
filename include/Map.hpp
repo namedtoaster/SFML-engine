@@ -32,4 +32,4 @@ private:
 	sf::Texture _textures[3];
 };
 
-#endif /* Map_hpp */
+#endif
