@@ -22,7 +22,8 @@ Player::Player() :
 	_accelX(0.0f),
 	_accelY(0.0f),
 	_animation(sf::Vector2u(7, 11), 0.15f),
-	_canJump(true)
+	_canJump(true),
+	_facingRight(true)
 {
     if (!_texture.loadFromFile("assets/adventurer-Sheet.png")) {
       return;
@@ -45,7 +46,7 @@ void Player::update(sf::RenderWindow &window, const Map& map, sf::Event &event, 
 	_applyGravity();
 	_checkCollisions(map); // TODO: make work when player is bigger than tiles -- super buggy when it is right now
 	_updatePosition();
-	_width = _animation.uvRect.width;
+	_width = abs(_animation.uvRect.width);
 	_height = _animation.uvRect.height;
 
 	// Texture and images
@@ -53,7 +54,7 @@ void Player::update(sf::RenderWindow &window, const Map& map, sf::Event &event, 
 }
 
 void Player::_move(sf::RenderWindow &window, sf::Event &event, float deltaTime) {
-	_animation.update(0, 0.01f, true);
+	_animation.update(0, 0.01f, _facingRight);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 		_jump();
@@ -64,14 +65,17 @@ void Player::_move(sf::RenderWindow &window, sf::Event &event, float deltaTime) 
 	{
 		// Update the player position
 		_moveRight();
-		_animation.update(1, 0.005f, true);
+		_facingRight = true;
+		_animation.update(1, 0.005f, _facingRight);
 	}
 	// Move left
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		// Update the player position
+		std::cout << "left" << std::endl;
 		_moveLeft();
-		_animation.update(1, 0.005f, false);
+		_facingRight = false;
+		_animation.update(1, 0.005f, _facingRight);
 	}
 }
 
@@ -238,4 +242,9 @@ void Player::draw(sf::RenderWindow &window, bool drawBorder)
 
 		window.draw(vertices, 5, sf::LinesStrip);
 	}
+}
+
+float Player::getHeight()
+{
+	return _height;
 }

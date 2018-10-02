@@ -85,7 +85,15 @@ void Game::_updateView() {
 	int x_pos = _player.getPosition().x;
 	int y_pos = _player.getPosition().y;
 
-	_view.setCenter(x_pos, y_pos);
+	// Set the cent based on the closest floor tile
+	int closestY;
+	for (int i = y_pos / TILE_W_H; i < _map._tiles.size(); i++) {
+		if (_map._tiles[i][x_pos / TILE_W_H].tileType == 1) {
+			closestY = i;
+			break;
+		}
+	}
+	_view.setCenter(x_pos, closestY * TILE_W_H);
 }
 
 void Game::_updatePlayers() {
@@ -102,7 +110,7 @@ void Game::_draw() {
 	_map.draw(_window, false);
 
 	// Draw player
-	_player.draw(_window, false);
+	_player.draw(_window, true);
 
     // TODO: Create different functions for drawing the character, drawing enemies, drawing the onscreen text, and more
 

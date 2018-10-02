@@ -40,7 +40,7 @@ void Animation::update(int index, float deltaTime, bool faceRight) {
 			currentImage.x = 0;
 		}
 	}
-
+	
 	uvRect = frames[index][currentImage.x];
 
 	if (faceRight) {
@@ -48,7 +48,7 @@ void Animation::update(int index, float deltaTime, bool faceRight) {
 		uvRect.width = abs(uvRect.width);
 	}
 	else {
-		uvRect.left = frames[index][currentImage.x].left + uvRect.width;
+		uvRect.left = uvRect.left + uvRect.width;
 		uvRect.width = -abs(uvRect.width);
 	}
 }
