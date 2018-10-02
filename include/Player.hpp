@@ -35,6 +35,7 @@ private:
 	void _collideWithTile(sf::Vector2f);
 	void _setPosition(float, float);
 	void _updatePosition();
+	void _setSpriteScale(float);
 private:
     float _posX;
     float _posY;
@@ -44,6 +45,7 @@ private:
     float _velY;
     float _accelX;
     float _accelY;
+	float _resizeFactor;
     int _texWidth;
     int _texHeight;
     bool _falling;

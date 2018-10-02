@@ -23,8 +23,10 @@ Player::Player() :
 	_accelY(0.0f),
 	_animation(sf::Vector2u(7, 11), 0.15f),
 	_canJump(true),
-	_facingRight(true)
+	_facingRight(true),
+	_resizeFactor(1.f)
 {
+	// Load the sprite sheet
     if (!_texture.loadFromFile("assets/adventurer-Sheet.png")) {
       return;
     }
@@ -38,6 +40,9 @@ Player::Player() :
     _texHeight = _texture.getSize().y;
 	_width = _animation.uvRect.width;
 	_height = _animation.uvRect.height;
+
+	// Scale as desired
+	_setSpriteScale(1.5f);
 }
 
 void Player::update(sf::RenderWindow &window, const Map& map, sf::Event &event, float deltaTime) {
@@ -46,8 +51,8 @@ void Player::update(sf::RenderWindow &window, const Map& map, sf::Event &event, 
 	_applyGravity();
 	_checkCollisions(map); // TODO: make work when player is bigger than tiles -- super buggy when it is right now
 	_updatePosition();
-	_width = abs(_animation.uvRect.width);
-	_height = _animation.uvRect.height;
+	_width = abs(_animation.uvRect.width) * _resizeFactor;
+	_height = _animation.uvRect.height * _resizeFactor;
 
 	// Texture and images
 	_sprite.setTextureRect(_animation.uvRect);
@@ -223,15 +228,21 @@ void Player::_updatePosition() {
     _setPosition(_posX, _posY);
 }
 
+void Player::_setSpriteScale(float scale)
+{
+	_resizeFactor = scale;
+
+	_sprite.setScale(sf::Vector2f(scale, scale));
+	_width *= scale;
+	_height *= scale;
+}
+
 void Player::_setPosition(float x, float y) {
 	_sprite.setPosition(x, y);
 }
 
 void Player::draw(sf::RenderWindow &window, bool drawBorder)
 {
-	sf::RectangleShape rectangle(sf::Vector2f(_width, _height));
-	rectangle.setPosition(_posX, _posY);
-	//window.draw(rectangle);
 	window.draw(_sprite);
 
 	if (drawBorder) {
