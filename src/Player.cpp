@@ -57,7 +57,8 @@ void Player::_move(sf::RenderWindow &window, sf::Event &event, float deltaTime) 
 	_animation.update(0, 0.01f, _facingRight);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-		_jump();
+		if (!_falling)
+			_jump();
 	}
 
 	// Move right
@@ -72,7 +73,6 @@ void Player::_move(sf::RenderWindow &window, sf::Event &event, float deltaTime) 
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		// Update the player position
-		std::cout << "left" << std::endl;
 		_moveLeft();
 		_facingRight = false;
 		_animation.update(1, 0.005f, _facingRight);
