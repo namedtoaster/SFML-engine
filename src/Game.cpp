@@ -15,7 +15,8 @@ Game::Game() :
 	_map("assets/data"),
 	_state(PLAY),
 	_isJumping(false),
-	_deltaTime(0.f)
+	_deltaTime(0.f),
+	_view(sf::FloatRect(0, 0, WIDTH, HEIGHT))
 {
     _init();
 }
@@ -44,7 +45,7 @@ void Game::_init() {
     _window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
 	// Zoom in a bit
-	_view.zoom(0.5f);
+	_view.zoom(0.7f);
 
 
 
@@ -85,7 +86,15 @@ void Game::_updateView() {
 	int x_pos = _player.getPosition().x;
 	int y_pos = _player.getPosition().y;
 
-	_view.setCenter(x_pos, y_pos);
+	// Set the cent based on the closest floor tile
+	int closestY;
+	for (int i = y_pos / TILE_W_H; i < _map._tiles.size(); i++) {
+		if (_map._tiles[i][x_pos / TILE_W_H].tileType == 1) {
+			closestY = i;
+			break;
+		}
+	}
+	_view.setCenter(x_pos, closestY * TILE_W_H);
 }
 
 void Game::_updatePlayers() {
@@ -95,9 +104,9 @@ void Game::_updatePlayers() {
 
 void Game::_draw() {
     // Clear the window and draw solid color (defaults to black)
-    _window.clear();
+	_window.clear(sf::Color(83, 58, 165, 255));
 	_window.setView(_view);
-    
+
 	// Draw tiles
 	_map.draw(_window, false);
 
@@ -106,7 +115,7 @@ void Game::_draw() {
 
     // TODO: Create different functions for drawing the character, drawing enemies, drawing the onscreen text, and more
 
-	_window.setView(_window.getDefaultView());
+	//_window.setView(_window.getDefaultView());
 
     // Display all items that have been drawn
     _window.display();

@@ -19,6 +19,7 @@ public:
     
 	void update(sf::RenderWindow&, const Map&, sf::Event&, float);
 	void draw(sf::RenderWindow&, bool);
+	float getHeight();
     sf::Vector2f getPosition();
 
 private:
@@ -34,7 +35,7 @@ private:
 	void _collideWithTile(sf::Vector2f);
 	void _setPosition(float, float);
 	void _updatePosition();
-	void _flip();
+	void _setSpriteScale(float);
 private:
     float _posX;
     float _posY;
@@ -44,10 +45,12 @@ private:
     float _velY;
     float _accelX;
     float _accelY;
+	float _resizeFactor;
     int _texWidth;
     int _texHeight;
     bool _falling;
 	bool _canJump;
+	bool _facingRight;
     sf::Sprite _sprite;
 	sf::Texture _texture;
 	Animation _animation;

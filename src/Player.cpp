@@ -22,8 +22,11 @@ Player::Player() :
 	_accelX(0.0f),
 	_accelY(0.0f),
 	_animation(sf::Vector2u(7, 11), 0.15f),
-	_canJump(true)
+	_canJump(true),
+	_facingRight(true),
+	_resizeFactor(1.f)
 {
+	// Load the sprite sheet
     if (!_texture.loadFromFile("assets/adventurer-Sheet.png")) {
       return;
     }
@@ -37,6 +40,9 @@ Player::Player() :
     _texHeight = _texture.getSize().y;
 	_width = _animation.uvRect.width;
 	_height = _animation.uvRect.height;
+
+	// Scale as desired
+	_setSpriteScale(1.5f);
 }
 
 void Player::update(sf::RenderWindow &window, const Map& map, sf::Event &event, float deltaTime) {
@@ -45,18 +51,19 @@ void Player::update(sf::RenderWindow &window, const Map& map, sf::Event &event, 
 	_applyGravity();
 	_checkCollisions(map); // TODO: make work when player is bigger than tiles -- super buggy when it is right now
 	_updatePosition();
-	_width = _animation.uvRect.width;
-	_height = _animation.uvRect.height;
+	_width = abs(_animation.uvRect.width) * _resizeFactor;
+	_height = _animation.uvRect.height * _resizeFactor;
 
 	// Texture and images
 	_sprite.setTextureRect(_animation.uvRect);
 }
 
 void Player::_move(sf::RenderWindow &window, sf::Event &event, float deltaTime) {
-	_animation.update(0, 0.01f, true);
+	_animation.update(0, 0.01f, _facingRight);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-		_jump();
+		if (!_falling)
+			_jump();
 	}
 
 	// Move right
@@ -64,14 +71,16 @@ void Player::_move(sf::RenderWindow &window, sf::Event &event, float deltaTime) 
 	{
 		// Update the player position
 		_moveRight();
-		_animation.update(1, 0.005f, true);
+		_facingRight = true;
+		_animation.update(1, 0.005f, _facingRight);
 	}
 	// Move left
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		// Update the player position
 		_moveLeft();
-		_animation.update(1, 0.005f, false);
+		_facingRight = false;
+		_animation.update(1, 0.005f, _facingRight);
 	}
 }
 
@@ -219,15 +228,21 @@ void Player::_updatePosition() {
     _setPosition(_posX, _posY);
 }
 
+void Player::_setSpriteScale(float scale)
+{
+	_resizeFactor = scale;
+
+	_sprite.setScale(sf::Vector2f(scale, scale));
+	_width *= scale;
+	_height *= scale;
+}
+
 void Player::_setPosition(float x, float y) {
 	_sprite.setPosition(x, y);
 }
 
 void Player::draw(sf::RenderWindow &window, bool drawBorder)
 {
-	sf::RectangleShape rectangle(sf::Vector2f(_width, _height));
-	rectangle.setPosition(_posX, _posY);
-	//window.draw(rectangle);
 	window.draw(_sprite);
 
 	if (drawBorder) {
@@ -238,4 +253,9 @@ void Player::draw(sf::RenderWindow &window, bool drawBorder)
 
 		window.draw(vertices, 5, sf::LinesStrip);
 	}
+}
+
+float Player::getHeight()
+{
+	return _height;
 }
