@@ -21,6 +21,19 @@ Animation::Animation(sf::Vector2u imageCount, float switchTime) {
 	frames.push_back(sf::IntRect(116,46,20,27));
 	frames.push_back(sf::IntRect(166,48,20,25));
 	this->addAnimation(frames);
+
+	// Slashing frames
+	frames.clear();
+	/*frames.push_back(sf::IntRect(160, 193, 23, 28));
+	frames.push_back(sf::IntRect(210, 194, 24, 27));
+	frames.push_back(sf::IntRect(259, 193, 25, 28));
+	frames.push_back(sf::IntRect(309, 193, 25, 28));
+	frames.push_back(sf::IntRect(7, 236, 27, 22));
+	frames.push_back(sf::IntRect(58, 238, 25, 20));*/
+	frames.push_back(sf::IntRect(115, 222, 34, 36));
+	frames.push_back(sf::IntRect(165, 222, 27, 36));
+	frames.push_back(sf::IntRect(215, 226, 19, 32));
+	this->addAnimation(frames);
 }
 
 void Animation::setTexture(sf::Texture &texture) {
@@ -58,4 +71,9 @@ void Animation::addAnimation(std::vector<sf::IntRect> animation)
 	frames.push_back(std::vector<sf::IntRect>());
 
 	frames[frames.size() - 1] = animation;
+}
+
+void Animation::setSwitchTime(float change)
+{
+	switchTime = change;
 }

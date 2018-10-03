@@ -26,7 +26,7 @@ Map::Map(const std::string &filename) {
     // load the textures - 0 = wall, 1 = ground, 2 = lava
 	if (!_textures[0].loadFromFile("assets/BrickGrey.png"))
 		return;
-	if (!_textures[1].loadFromFile("assets/CommTerminal.png"))
+	if (!_textures[1].loadFromFile("assets/purple-brick.png"))
 		return;
 	if (!_textures[2].loadFromFile("assets/lava.png"))
 		return;

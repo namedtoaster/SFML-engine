@@ -32,6 +32,9 @@ const float PLAYER_START_Y = 60.f;
 const int TILE_W_H = 50;
 const int TILES_PER_ROW = 10;
 
+// Text/font constants
+const float TOP_MARG = 15, BOT_MARG = 15, LEFT_MARG = 15, RIGHT_MARG = 15;
+
 // TODO: Make this work. For some reason it gives me a linker error when I try to do this
 /*sf::Keyboard::Key RIGHT = sf::Keyboard::D;
 sf::Keyboard::Key LEFT = sf::Keyboard::A;*/

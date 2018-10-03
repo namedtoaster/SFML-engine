@@ -24,7 +24,8 @@ Player::Player() :
 	_animation(sf::Vector2u(7, 11), 0.15f),
 	_canJump(true),
 	_facingRight(true),
-	_resizeFactor(1.f)
+	_resizeFactor(1.f),
+	_slashing(false)
 {
 	// Load the sprite sheet
     if (!_texture.loadFromFile("assets/adventurer-Sheet.png")) {
@@ -42,12 +43,12 @@ Player::Player() :
 	_height = _animation.uvRect.height;
 
 	// Scale as desired
-	_setSpriteScale(1.5f);
+	_setSpriteScale(_resizeFactor);
 }
 
-void Player::update(sf::RenderWindow &window, const Map& map, sf::Event &event, float deltaTime) {
+void Player::update(sf::RenderWindow &window, const Map& map, float deltaTime) {
 	// Movement and collisions
-	_move(window, event, deltaTime);
+	_processEvents(window, deltaTime);
 	_applyGravity();
 	_checkCollisions(map); // TODO: make work when player is bigger than tiles -- super buggy when it is right now
 	_updatePosition();
@@ -58,7 +59,7 @@ void Player::update(sf::RenderWindow &window, const Map& map, sf::Event &event, 
 	_sprite.setTextureRect(_animation.uvRect);
 }
 
-void Player::_move(sf::RenderWindow &window, sf::Event &event, float deltaTime) {
+void Player::_processEvents(sf::RenderWindow &window, float deltaTime) {
 	_animation.update(0, 0.01f, _facingRight);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
@@ -80,7 +81,13 @@ void Player::_move(sf::RenderWindow &window, sf::Event &event, float deltaTime) 
 		// Update the player position
 		_moveLeft();
 		_facingRight = false;
-		_animation.update(1, 0.005f, _facingRight);
+		_animation.update(1, .005f, _facingRight);
+	}
+
+	// Slash
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && !_slashing) {
+		_slashing = true;
+		_animation.update(2, 1.f, _facingRight);
 	}
 }
 
@@ -221,6 +228,12 @@ void Player::_collideWithTile(sf::Vector2f pos) {
 
 sf::Vector2f Player::getPosition() {
 	return sf::Vector2f(_posX, _posY);
+}
+
+void Player::doneSlashing()
+{
+	_slashing = false;
+	_animation.update(0, 0.01f, _facingRight);
 }
 
 void Player::_updatePosition() {

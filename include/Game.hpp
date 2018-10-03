@@ -42,6 +42,7 @@ private:
     sf::View _view;
 	sf::Clock _clock;
 	sf::Sprite _bg;
+	sf::Sprite _vignette;
 	sf::Text score;
     Player _player;
     GameState _state;
