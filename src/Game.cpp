@@ -23,12 +23,18 @@ Game::Game() :
 	sf::Texture bgText;
 	bgText.loadFromFile("assets/stars.jpg");
 	_bg.setTexture(bgText);
+	// Vignette
+	sf::Texture text;
+	text.loadFromFile("assets/vignette.png");
+	_vignette.setTexture(text);
+	_vignette.scale(float(WIDTH) / 1510.f, float(HEIGHT) / 1000.f);
 
 	// Load text
 	sf::Font font;
 	font.loadFromFile("assets/chintzy.ttf");
 	score.setFont(font);
-	score.setString("1000");
+	score.setString("x1000");
+	score.setPosition(LEFT_MARG, TOP_MARG);
 
     _init();
 }
@@ -77,6 +83,10 @@ void Game::_updateWindow() {
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
             _window.close();
         }
+
+		// TODO: figure out how to smoothly incorporate this
+		/*if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::LControl)
+			_player.doneSlashing();*/
     }
     
     // Window resize
@@ -116,7 +126,7 @@ void Game::_updateView() {
 
 void Game::_updatePlayers() {
 	sf::Event event;
-	_player.update(_window, _map, event, _deltaTime);
+	_player.update(_window, _map, _deltaTime);
 }
 
 void Game::_draw() {
@@ -136,6 +146,10 @@ void Game::_draw() {
     // TODO: Create different functions for drawing the character, drawing enemies, drawing the onscreen text, and more
 
 	_window.setView(_window.getDefaultView());
+
+	// Vignette test
+	_window.draw(_vignette);
+
 	_window.draw(score);
 
     // Display all items that have been drawn

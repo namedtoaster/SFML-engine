@@ -17,13 +17,14 @@ class Player {
 public:
     Player();
     
-	void update(sf::RenderWindow&, const Map&, sf::Event&, float);
+	void update(sf::RenderWindow&, const Map&, float);
 	void draw(sf::RenderWindow&, bool);
 	float getHeight();
     sf::Vector2f getPosition();
+	void doneSlashing();
 
 private:
-	void _move(sf::RenderWindow&, sf::Event&, float);
+	void _processEvents(sf::RenderWindow&, float);
 	void _moveRight();
 	void _moveLeft();
 	void _moveDown();
@@ -51,6 +52,7 @@ private:
     bool _falling;
 	bool _canJump;
 	bool _facingRight;
+	bool _slashing;
     sf::Sprite _sprite;
 	sf::Texture _texture;
 	Animation _animation;
