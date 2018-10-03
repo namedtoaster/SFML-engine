@@ -16,8 +16,20 @@ Game::Game() :
 	_state(PLAY),
 	_isJumping(false),
 	_deltaTime(0.f),
-	_view(sf::FloatRect(0, 0, WIDTH, HEIGHT))
+	_view(sf::FloatRect(0, 0, WIDTH, HEIGHT)),
+	_zoomLevel(.7f)
 {
+	// Load background
+	sf::Texture bgText;
+	bgText.loadFromFile("assets/stars.jpg");
+	_bg.setTexture(bgText);
+
+	// Load text
+	sf::Font font;
+	font.loadFromFile("assets/chintzy.ttf");
+	score.setFont(font);
+	score.setString("1000");
+
     _init();
 }
 
@@ -45,10 +57,7 @@ void Game::_init() {
     _window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
 	// Zoom in a bit
-	_view.zoom(0.7f);
-
-
-
+	_zoom(_zoomLevel);
     
     // Run the game
     run();
@@ -72,8 +81,16 @@ void Game::_updateWindow() {
     
     // Window resize
     if (event.type == sf::Event::Resized) {
-        sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
-		_view.reset(visibleArea);
+        //sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+		//_view.reset(visibleArea);
+
+		int x_pos = _player.getPosition().x;
+		int y_pos = _player.getPosition().y;
+
+		_view.setCenter(sf::Vector2f(x_pos, y_pos));
+		_view.setSize(sf::Vector2f(event.size.width, event.size.height));
+
+		_zoom(_zoomLevel);
         
         // TODO: Prevent the window from being shurnk smaller than the height of the map and a set width
     }
@@ -104,7 +121,10 @@ void Game::_updatePlayers() {
 
 void Game::_draw() {
     // Clear the window and draw solid color (defaults to black)
-	_window.clear(sf::Color(83, 58, 165, 255));
+	_window.clear();
+
+	_window.draw(_bg);
+
 	_window.setView(_view);
 
 	// Draw tiles
@@ -115,8 +135,15 @@ void Game::_draw() {
 
     // TODO: Create different functions for drawing the character, drawing enemies, drawing the onscreen text, and more
 
-	//_window.setView(_window.getDefaultView());
+	_window.setView(_window.getDefaultView());
+	_window.draw(score);
 
     // Display all items that have been drawn
     _window.display();
+}
+
+void Game::_zoom(float factor)
+{
+	_zoomLevel = factor;
+	_view.zoom(_zoomLevel);
 }

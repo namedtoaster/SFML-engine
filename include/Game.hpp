@@ -29,17 +29,20 @@ public:
 
 private:
     void _init();
-    void _processEvents();
 	void _updateWindow();
     void _updateView();
 	void _updatePlayers();
     void _draw();
+	void _zoom(float);
 private:
 	float _deltaTime;
+	float _zoomLevel;
     bool _isJumping;
     sf::RenderWindow _window;
     sf::View _view;
 	sf::Clock _clock;
+	sf::Sprite _bg;
+	sf::Text score;
     Player _player;
     GameState _state;
     Map _map;
