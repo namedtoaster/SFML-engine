@@ -41,13 +41,14 @@ void Animation::setTexture(sf::Texture &texture) {
 	uvRect.height = texture.getSize().y / float(imageCount.y);
 }
 
-void Animation::update(int index, float deltaTime, bool faceRight) {
+void Animation::update(int index, float deltaTime, bool faceRight, float &y) {
 	this->faceRight = faceRight;
 	totalTime += deltaTime;
 
 	if (totalTime >= switchTime) {
 		totalTime -= switchTime;
 		currentImage.x++;
+		_updateFloor(y);
 
 		if (currentImage.x >= frames[index].size() - 1) {
 			currentImage.x = 0;
@@ -73,7 +74,26 @@ void Animation::addAnimation(std::vector<sf::IntRect> animation)
 	frames[frames.size() - 1] = animation;
 }
 
-void Animation::setSwitchTime(float change)
+sf::Vector2u& Animation::getCurrentImage()
 {
-	switchTime = change;
+	return currentImage;
+}
+
+std::vector<std::vector<sf::IntRect>>& Animation::getFrames()
+{
+	return frames;
+}
+
+void Animation::_updateFloor(float &y)
+{
+	int animRow = currentImage.y;
+	int animCol = currentImage.x;
+	int endIndex = frames[animRow].size() - 1;
+	int prevHeight = (animCol == 0 ? frames[animRow][endIndex].height : frames[animRow][animCol - 1].height);
+	int currHeight = frames[animRow][animCol].height;
+
+	float diff = prevHeight - currHeight;
+
+	if (diff < 0) y -= abs(diff);
+	else if (diff > 0) y += abs(diff);
 }
