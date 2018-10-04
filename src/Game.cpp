@@ -81,7 +81,8 @@ void Game::_updateWindow() {
         }
         // Escape pressed: exit
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
-            _window.close();
+            std::cout << "Pause" << std::endl;
+            //_window.close();
         }
 
 		// TODO: figure out how to smoothly incorporate this

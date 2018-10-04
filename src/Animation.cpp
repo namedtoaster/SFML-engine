@@ -72,8 +72,3 @@ void Animation::addAnimation(std::vector<sf::IntRect> animation)
 
 	frames[frames.size() - 1] = animation;
 }
-
-void Animation::setSwitchTime(float change)
-{
-	switchTime = change;
-}
