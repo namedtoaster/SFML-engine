@@ -48,19 +48,19 @@ Player::Player() :
 
 void Player::update(sf::RenderWindow &window, const Map& map, float deltaTime) {
 	// Movement and collisions
-	_processEvents(window, deltaTime);
 	_applyGravity();
 	_checkCollisions(map); // TODO: make work when player is bigger than tiles -- super buggy when it is right now
+	_processEvents(window, deltaTime);
 	_updatePosition();
-	_width = abs(_animation.uvRect.width) * _resizeFactor;
-	_height = _animation.uvRect.height * _resizeFactor;
 
 	// Texture and images
 	_sprite.setTextureRect(_animation.uvRect);
 }
 
 void Player::_processEvents(sf::RenderWindow &window, float deltaTime) {
-	_animation.update(0, 0.01f, _facingRight);
+	std::cout << "before y: " << _posY << std::endl;
+	_animation.update(0, 0.01f, _facingRight, _posY);
+	std::cout << "after y: " << _posY << "\n\n\n\n" << std::endl;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 		if (!_falling)
@@ -73,7 +73,7 @@ void Player::_processEvents(sf::RenderWindow &window, float deltaTime) {
 		// Update the player position
 		_moveRight();
 		_facingRight = true;
-		_animation.update(1, 0.005f, _facingRight);
+		_animation.update(1, 0.005f, _facingRight, _posY);
 	}
 	// Move left
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -81,13 +81,13 @@ void Player::_processEvents(sf::RenderWindow &window, float deltaTime) {
 		// Update the player position
 		_moveLeft();
 		_facingRight = false;
-		_animation.update(1, .005f, _facingRight);
+		_animation.update(1, .005f, _facingRight, _posY);
 	}
 
 	// Slash
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && !_slashing) {
 		_slashing = true;
-		_animation.update(2, 1.f, _facingRight);
+		_animation.update(2, 1.f, _facingRight, _posY);
 	}
 }
 
@@ -233,12 +233,15 @@ sf::Vector2f Player::getPosition() {
 void Player::doneSlashing()
 {
 	_slashing = false;
-	_animation.update(0, 0.01f, _facingRight);
+	_animation.update(0, 0.01f, _facingRight, _posY);
 }
 
 void Player::_updatePosition() {
     // Update the player's position
     _setPosition(_posX, _posY);
+
+	_width = abs(_animation.uvRect.width) * _resizeFactor;
+	_height = _animation.uvRect.height * _resizeFactor;
 }
 
 void Player::_setSpriteScale(float scale)

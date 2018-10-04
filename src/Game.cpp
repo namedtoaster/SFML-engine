@@ -97,7 +97,7 @@ void Game::_updateWindow() {
 		int x_pos = _player.getPosition().x;
 		int y_pos = _player.getPosition().y;
 
-		_view.setCenter(sf::Vector2f(x_pos, y_pos));
+		_view.setCenter(sf::Vector2f(x_pos, y_pos + _player.getHeight()));
 		_view.setSize(sf::Vector2f(event.size.width, event.size.height));
 
 		_zoom(_zoomLevel);
@@ -113,15 +113,8 @@ void Game::_updateView() {
 	int x_pos = _player.getPosition().x;
 	int y_pos = _player.getPosition().y;
 
-	// Set the cent based on the closest floor tile
-	int closestY;
-	for (int i = y_pos / TILE_W_H; i < _map._tiles.size(); i++) {
-		if (_map._tiles[i][x_pos / TILE_W_H].tileType == 1) {
-			closestY = i;
-			break;
-		}
-	}
-	_view.setCenter(x_pos, closestY * TILE_W_H);
+	// Center on player
+	_view.setCenter(x_pos, y_pos + _player.getHeight());
 }
 
 void Game::_updatePlayers() {
