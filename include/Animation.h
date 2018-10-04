@@ -7,8 +7,10 @@ public:
 	Animation(sf::Vector2u imageCount, float switchTime);
 
 	void setTexture(sf::Texture&);
-	void update(int, float, bool);
+	void update(int, float, bool, float&);
 	void addAnimation(std::vector<sf::IntRect>);
+	sf::Vector2u& getCurrentImage();
+	std::vector<std::vector<sf::IntRect>>& getFrames();
 public:
 	sf::IntRect uvRect;
 	std::vector<std::vector<sf::IntRect>> frames;
@@ -19,4 +21,6 @@ private:
 	float totalTime;
 	float switchTime;
 	bool faceRight;
+private:
+	void _updateFloor(float&);
 };
