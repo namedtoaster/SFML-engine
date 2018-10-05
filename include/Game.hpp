@@ -34,7 +34,8 @@ private:
 	void _updatePlayers();
     void _draw();
 	void _zoom(float);
-    void _pauseGame(sf::RenderWindow&);
+    void _pauseGame();
+	void _pauseMenuSelect();
 private:
 	float _deltaTime;
 	float _zoomLevel;
@@ -43,6 +44,7 @@ private:
     sf::View _view;
 	sf::Clock _clock;
 	sf::Sprite _bg;
+	sf::Sprite _pauseSword;
 	sf::Sprite _vignette;
 	sf::Text _score;
     sf::Font _font;

@@ -19,15 +19,20 @@ Game::Game() :
 	_view(sf::FloatRect(0, 0, WIDTH, HEIGHT)),
 	_zoomLevel(.7f)
 {
-	// Load background
-	sf::Texture bgText;
-	bgText.loadFromFile("assets/stars.jpg");
-	_bg.setTexture(bgText);
+	// Load images
+	sf::Texture bgTxt, swordTxt;
+	bgTxt.loadFromFile("assets/stars.jpg");
+	_bg.setTexture(bgTxt);
+	swordTxt.loadFromFile("assets/pause-sword.png");
+	_pauseSword.setTexture(swordTxt);
+	_pauseSword.scale(2.f, 2.f);
+
     
     // Load font
     if (!_font.loadFromFile("assets/chintzy.ttf"))
         std::cout << "Cannot load font" << std::endl;
     _score.setFont(_font);
+	_score.setString("0");
     _score.setPosition(LEFT_MARG, TOP_MARG);
     
 	// Vignette
@@ -48,8 +53,6 @@ void Game::run() {
         
         if (_state == PLAY)
             _updatePlayers();
-        else if (_state == PAUSE)
-            _pauseGame(_window);
         
         _draw();
     }
@@ -130,12 +133,13 @@ void Game::_updatePlayers() {
 	_player.update(_window, _map, _deltaTime);
 }
 
+// TODO: Find a more elegant way of drawing everything (maybe find or make a way to stack order of drawings -- things that move and things that don't)
 void Game::_draw() {
     // Clear the window and draw solid color (defaults to black)
 	_window.clear();
 
+	// Draw bg
 	_window.draw(_bg);
-
 	_window.setView(_view);
 
 	// Draw tiles
@@ -143,15 +147,20 @@ void Game::_draw() {
 
 	// Draw player
 	_player.draw(_window, false);
-
     // TODO: Create different functions for drawing the character, drawing enemies, drawing the onscreen text, and more
 
 	_window.setView(_window.getDefaultView());
-
 	// Vignette test
 	_window.draw(_vignette);
 
+	// Draw text
 	_window.draw(_score);
+
+	// TODO: make a menu class or something
+	// TODO: this relates to the TODO at the top of the draw function, but I need to figure out a better way to separate the pause logic from the draw function
+	if (_state == PAUSE) {
+		_pauseGame();
+	}
 
     // Display all items that have been drawn
     _window.display();
@@ -163,15 +172,54 @@ void Game::_zoom(float factor)
 	_view.zoom(_zoomLevel);
 }
 
-void Game::_pauseGame(sf::RenderWindow& window) {
-    sf::Text pauseText;
-    pauseText.setFont(_font);
-    pauseText.setString("PAUSE");
-    
-    float textPosX = _view.getCenter().x;
-    float textPosY = _view.getCenter().y;
-    
-    pauseText.setPosition(textPosX, textPosY);
-    
-    window.draw(pauseText);
+void Game::_pauseGame() {
+	// TODO: I will definitely need to create a class for this if I end up creating lots of text
+	// It's only a pause menu so there shouldn't be much, but still something to think about
+
+	// Create the text to be drawn
+	sf::Text pause, resume, options;
+	pause.setFont(_font);
+	resume.setFont(_font);
+	options.setFont(_font);
+	pause.setString("PAUSE");
+	resume.setString("RESUME");
+	options.setString("OPTIONS");
+
+	//pause.scale(1.5f, 1.5f);
+	pause.setCharacterSize(60);
+	sf::FloatRect textRect = pause.getLocalBounds();
+	pause.setOrigin(textRect.left + textRect.width / 2.0f,
+		textRect.top + textRect.height / 2.0f);
+	textRect = resume.getLocalBounds();
+	resume.setOrigin(textRect.left + textRect.width / 2.0f,
+		textRect.top + textRect.height / 2.0f);
+	textRect = options.getLocalBounds();
+	options.setOrigin(textRect.left + textRect.width / 2.0f,
+		textRect.top + textRect.height / 2.0f);
+	textRect = _pauseSword.getLocalBounds();
+	_pauseSword.setOrigin(textRect.left + textRect.width / 2.0f,
+		textRect.top + textRect.height / 2.0f);
+
+
+	float textPosX = _window.getSize().x / 2;
+	float textPosY = _window.getSize().y / 2;
+	pause.setPosition(sf::Vector2f(textPosX, textPosY -50));
+	resume.setPosition(pause.getPosition().x, pause.getPosition().y + MENU_TXT_MARG * 2);
+	options.setPosition(resume.getPosition().x, resume.getPosition().y + MENU_TXT_MARG);
+	_pauseSword.setPosition(resume.getPosition().x - resume.getLocalBounds().width / 2 - 30, resume.getPosition().y);
+
+	_window.draw(pause);
+	_window.draw(resume);
+	_window.draw(options);
+	_window.draw(_pauseSword);
+}
+
+void Game::_pauseMenuSelect()
+{
+	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+		
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) {
+		
+	}*/
 }

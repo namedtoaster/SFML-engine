@@ -58,7 +58,7 @@ void Player::update(sf::RenderWindow &window, const Map& map, float deltaTime) {
 }
 
 void Player::_processEvents(sf::RenderWindow &window, float deltaTime) {
-	_animation.update(0, 0.01f, _facingRight, _posY);
+	_animation.update(0, 0.01f, _facingRight, _posY, _resizeFactor);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 		if (!_falling)
@@ -71,7 +71,7 @@ void Player::_processEvents(sf::RenderWindow &window, float deltaTime) {
 		// Update the player position
 		_moveRight();
 		_facingRight = true;
-		_animation.update(1, 0.005f, _facingRight, _posY);
+		_animation.update(1, 0.005f, _facingRight, _posY, _resizeFactor);
 	}
 	// Move left
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -79,13 +79,13 @@ void Player::_processEvents(sf::RenderWindow &window, float deltaTime) {
 		// Update the player position
 		_moveLeft();
 		_facingRight = false;
-		_animation.update(1, .005f, _facingRight, _posY);
+		_animation.update(1, .005f, _facingRight, _posY, _resizeFactor);
 	}
 
 	// Slash
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && !_slashing) {
 		_slashing = true;
-		_animation.update(2, 1.f, _facingRight, _posY);
+		_animation.update(2, 1.f, _facingRight, _posY, _resizeFactor);
 	}
 }
 
@@ -231,7 +231,7 @@ sf::Vector2f Player::getPosition() {
 void Player::doneSlashing()
 {
 	_slashing = false;
-	_animation.update(0, 0.01f, _facingRight, _posY);
+	_animation.update(0, 0.01f, _facingRight, _posY, _resizeFactor);
 }
 
 void Player::_updatePosition() {

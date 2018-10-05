@@ -34,6 +34,7 @@ const int TILES_PER_ROW = 10;
 
 // Text/font constants
 const float TOP_MARG = 15, BOT_MARG = 15, LEFT_MARG = 15, RIGHT_MARG = 15;
+const float MENU_TXT_MARG = 30;
 
 // TODO: Make this work. For some reason it gives me a linker error when I try to do this
 /*sf::Keyboard::Key RIGHT = sf::Keyboard::D;
