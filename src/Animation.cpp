@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include "Animation.h"
 
 Animation::Animation(sf::Vector2u imageCount, float switchTime) {

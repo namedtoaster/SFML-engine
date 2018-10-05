@@ -23,18 +23,18 @@ Game::Game() :
 	sf::Texture bgText;
 	bgText.loadFromFile("assets/stars.jpg");
 	_bg.setTexture(bgText);
+    
+    // Load font
+    if (!_font.loadFromFile("assets/chintzy.ttf"))
+        std::cout << "Cannot load font" << std::endl;
+    _score.setFont(_font);
+    _score.setPosition(LEFT_MARG, TOP_MARG);
+    
 	// Vignette
 	sf::Texture text;
 	text.loadFromFile("assets/vignette.png");
 	_vignette.setTexture(text);
 	_vignette.scale(float(WIDTH) / 1510.f, float(HEIGHT) / 1000.f);
-
-	// Load text
-	sf::Font font;
-	font.loadFromFile("assets/chintzy.ttf");
-	score.setFont(font);
-	score.setString("x1000");
-	score.setPosition(LEFT_MARG, TOP_MARG);
 
     _init();
 }
@@ -45,7 +45,12 @@ void Game::run() {
 
 		_updateWindow();
 		_updateView();
-		_updatePlayers();
+        
+        if (_state == PLAY)
+            _updatePlayers();
+        else if (_state == PAUSE)
+            _pauseGame(_window);
+        
         _draw();
     }
 }
@@ -81,8 +86,10 @@ void Game::_updateWindow() {
         }
         // Escape pressed: exit
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
-            std::cout << "Pause" << std::endl;
-            //_window.close();
+            if (_state == PLAY)
+                _state = PAUSE;
+            else if (_state == PAUSE)
+                _state = PLAY;
         }
 
 		// TODO: figure out how to smoothly incorporate this
@@ -144,7 +151,7 @@ void Game::_draw() {
 	// Vignette test
 	_window.draw(_vignette);
 
-	_window.draw(score);
+	_window.draw(_score);
 
     // Display all items that have been drawn
     _window.display();
@@ -154,4 +161,17 @@ void Game::_zoom(float factor)
 {
 	_zoomLevel = factor;
 	_view.zoom(_zoomLevel);
+}
+
+void Game::_pauseGame(sf::RenderWindow& window) {
+    sf::Text pauseText;
+    pauseText.setFont(_font);
+    pauseText.setString("PAUSE");
+    
+    float textPosX = _view.getCenter().x;
+    float textPosY = _view.getCenter().y;
+    
+    pauseText.setPosition(textPosX, textPosY);
+    
+    window.draw(pauseText);
 }

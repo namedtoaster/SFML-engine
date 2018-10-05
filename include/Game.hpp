@@ -19,7 +19,7 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
-enum GameState { PLAY, QUIT };
+enum GameState { PLAY, QUIT, PAUSE };
 
 class Game {
 public:
@@ -34,6 +34,7 @@ private:
 	void _updatePlayers();
     void _draw();
 	void _zoom(float);
+    void _pauseGame(sf::RenderWindow&);
 private:
 	float _deltaTime;
 	float _zoomLevel;
@@ -43,7 +44,8 @@ private:
 	sf::Clock _clock;
 	sf::Sprite _bg;
 	sf::Sprite _vignette;
-	sf::Text score;
+	sf::Text _score;
+    sf::Font _font;
     Player _player;
     GameState _state;
     Map _map;

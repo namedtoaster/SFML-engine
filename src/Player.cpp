@@ -58,9 +58,7 @@ void Player::update(sf::RenderWindow &window, const Map& map, float deltaTime) {
 }
 
 void Player::_processEvents(sf::RenderWindow &window, float deltaTime) {
-	std::cout << "before y: " << _posY << std::endl;
 	_animation.update(0, 0.01f, _facingRight, _posY);
-	std::cout << "after y: " << _posY << "\n\n\n\n" << std::endl;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 		if (!_falling)
