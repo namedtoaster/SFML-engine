@@ -133,6 +133,7 @@ void Player::_checkCollisions(const Map &map) {
 	_checkTilePosition(map, collideTilePosition, _posX, _posY + _height);
 	_checkTilePosition(map, collideTilePosition, _posX + _width, _posY + _height);
 
+	sf::Vector2i indices;
 	// Check top edge to top right
 	for (int i = _posX + TILE_W_H; i < (_width + _posX); i += TILE_W_H) {
 		_checkTilePosition(map, collideTilePosition, i, _posY);
@@ -186,10 +187,12 @@ void Player::_checkTilePosition(const Map& map, std::vector<sf::Vector2f>& colli
 
 	sf::Vector2i cornerPos = sf::Vector2i(std::floor(x / TILE_W_H), std::floor(y / TILE_W_H));
 
-	if (map._tiles[cornerPos.y][cornerPos.x].tileType != 0) {
-		collideTilePosition.push_back(sf::Vector2f((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2), (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2)));
+	if (cornerPos.y < map._tiles.size() && cornerPos.x < map._tiles[cornerPos.y].size()) {
+		if (map._tiles[cornerPos.y][cornerPos.x].tileType != 0) {
+			collideTilePosition.push_back(sf::Vector2f((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2), (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2)));
+		}
+		else _falling = true;
 	}
-	else _falling = true;
 }
 
 void Player::_collideWithTile(sf::Vector2f pos) {

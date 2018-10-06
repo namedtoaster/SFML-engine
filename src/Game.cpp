@@ -96,8 +96,8 @@ void Game::_updateWindow() {
         }
 
 		// TODO: figure out how to smoothly incorporate this
-		/*if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::LControl)
-			_player.doneSlashing();*/
+		if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::LControl)
+			_player.doneSlashing();
     }
     
     // Window resize
