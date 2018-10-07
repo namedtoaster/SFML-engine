@@ -45,14 +45,20 @@ Game::Game() :
 }
 
 void Game::run() {
+	// Initialize animation variables
+	sf::Clock frameClock;
+	float speed = 80.f;
+	bool noKeyWasPressed = true;
+
     while (_window.isOpen()) {
-		_deltaTime = _clock.restart().asSeconds();
+		// Update animation timing
+		sf::Time frameTime = frameClock.restart();
 
 		_updateWindow();
 		_updateView();
         
         if (_state == PLAY)
-            _updatePlayers();
+            _updatePlayers(frameTime);
         
         _draw();
     }
@@ -119,8 +125,6 @@ void Game::_updateWindow() {
 
 // Keep view centered around player
 void Game::_updateView() {
-	sf::Event event;
-	
 	int x_pos = _player.getPosition().x;
 	int y_pos = _player.getPosition().y;
 
@@ -128,9 +132,8 @@ void Game::_updateView() {
 	_view.setCenter(x_pos, y_pos + _player.getHeight());
 }
 
-void Game::_updatePlayers() {
-	sf::Event event;
-	_player.update(_window, _map, _deltaTime);
+void Game::_updatePlayers(sf::Time frameTime) {
+	_player.update(_window, _map, frameTime);
 }
 
 // TODO: Find a more elegant way of drawing everything (maybe find or make a way to stack order of drawings -- things that move and things that don't)

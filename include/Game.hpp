@@ -31,7 +31,7 @@ private:
     void _init();
 	void _updateWindow();
     void _updateView();
-	void _updatePlayers();
+	void _updatePlayers(sf::Time);
     void _draw();
 	void _zoom(float);
     void _pauseGame();

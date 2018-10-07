@@ -12,19 +12,20 @@
 #include "Constants.h"
 #include "Map.hpp"
 #include "Animation.h"
+#include "Banimation.h"
+#include "AnimatedSprite.h"
 
 class Player {
 public:
     Player();
     
-	void update(sf::RenderWindow&, const Map&, float);
+	void update(sf::RenderWindow&, const Map&, sf::Time);
 	void draw(sf::RenderWindow&, bool);
 	float getHeight();
     sf::Vector2f getPosition();
-	void doneSlashing();
 
 private:
-	void _processEvents(sf::RenderWindow&, float);
+	void _processEvents(sf::RenderWindow&);
 	void _moveRight();
 	void _moveLeft();
 	void _moveDown();
@@ -37,6 +38,7 @@ private:
 	void _setPosition(float, float);
 	void _updatePosition();
 	void _setSpriteScale(float);
+	void _idle();
 private:
     float _posX;
     float _posY;
@@ -55,7 +57,11 @@ private:
 	bool _slashing;
     sf::Sprite _sprite;
 	sf::Texture _texture;
-	Animation _animation;
+	const Banimation* _currentAnimation;
+	Banimation _idleAnimation;
+	Banimation _runningAnimation;
+	Banimation _slashingAnimation;
+	AnimatedSprite animatedSprite;
 	friend class Animation;
 };
 

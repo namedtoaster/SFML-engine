@@ -21,71 +21,96 @@ Player::Player() :
 	_velY(0.0f),
 	_accelX(0.0f),
 	_accelY(0.0f),
-	_animation(sf::Vector2u(7, 11), 0.15f),
 	_canJump(true),
 	_facingRight(true),
 	_resizeFactor(1.f),
-	_slashing(false)
+	_slashing(false),
+	animatedSprite(sf::seconds(0.18), true, false)
 {
-	// Load the sprite sheet
-    if (!_texture.loadFromFile("assets/adventurer-Sheet.png")) {
-      return;
-    }
-	_animation.setTexture(_texture);
-    
-    // Initialize sprite/texture
-    _sprite.setTexture(_texture);
-
     // Initialize members vars
     _texWidth = _texture.getSize().x;
     _texHeight = _texture.getSize().y;
-	_width = _animation.uvRect.width;
-	_height = _animation.uvRect.height;
 
 	// Scale as desired
-	_setSpriteScale(_resizeFactor);
+	//_setSpriteScale(_resizeFactor);
+
+
+	// Load the sprite sheet
+	if (!_texture.loadFromFile("assets/adventurer-Sheet.png")) {
+		return;
+	}
+
+	// Set idle animation
+	_idleAnimation.setSpriteSheet(_texture);
+	_idleAnimation.addFrame(sf::IntRect(14, 7, 19, 29));
+	_idleAnimation.addFrame(sf::IntRect(66, 6, 17, 30));
+	_idleAnimation.addFrame(sf::IntRect(115, 6, 19, 30));
+	_idleAnimation.addFrame(sf::IntRect(163, 7, 20, 29));
+
+	// Set running animation
+	_runningAnimation.setSpriteSheet(_texture);
+	_runningAnimation.addFrame(sf::IntRect(67, 45, 20, 28));
+	_runningAnimation.addFrame(sf::IntRect(116, 46, 20, 27));
+	_runningAnimation.addFrame(sf::IntRect(166, 48, 20, 25));
+
+	// Set slashing animation
+	_slashingAnimation.setSpriteSheet(_texture);
+	_slashingAnimation.addFrame(sf::IntRect(115, 222, 34, 36));
+	_slashingAnimation.addFrame(sf::IntRect(165, 222, 27, 36));
+	_slashingAnimation.addFrame(sf::IntRect(215, 226, 19, 32));
+
+	_currentAnimation = &_idleAnimation;
+	animatedSprite.setLooped(false);
 }
 
-void Player::update(sf::RenderWindow &window, const Map& map, float deltaTime) {
+void Player::update(sf::RenderWindow &window, const Map& map, sf::Time frameTime) {
 	// Movement and collisions
 	_applyGravity();
 	_checkCollisions(map); // TODO: make work when player is bigger than tiles -- super buggy when it is right now
-	_processEvents(window, deltaTime);
+	_processEvents(window);
 	_updatePosition();
 
-	// Texture and images
-	_sprite.setTextureRect(_animation.uvRect);
+	// Animation stuff
+	animatedSprite.play(*_currentAnimation);
+	animatedSprite.setPosition(sf::Vector2f(_posX, _posY));
+	animatedSprite.update(frameTime);
+	animatedSprite.pause();
 }
 
-void Player::_processEvents(sf::RenderWindow &window, float deltaTime) {
-	_animation.update(0, 0.01f, _facingRight, _posY, _resizeFactor);
+void Player::_processEvents(sf::RenderWindow &window) {
+	if (!_slashing) {
+		_currentAnimation = &_idleAnimation;
+
+		// Move right
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		{
+			// Update the player position
+			_moveRight();
+			_facingRight = true;
+			_currentAnimation = &_runningAnimation;
+		}
+		// Move left
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		{
+			// Update the player position
+			_moveLeft();
+			_facingRight = false;
+			_currentAnimation = &_runningAnimation;
+		}
+		// Slash
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+			_currentAnimation = &_slashingAnimation;
+			_slashing = true;
+		}
+	}
+	else {
+		if (animatedSprite.m_currentFrame == 2)
+			_slashing = false;
+	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 		if (!_falling)
 			_jump();
-	}
-
-	// Move right
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-	{
-		// Update the player position
-		_moveRight();
-		_facingRight = true;
-		_animation.update(1, 0.005f, _facingRight, _posY, _resizeFactor);
-	}
-	// Move left
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-	{
-		// Update the player position
-		_moveLeft();
-		_facingRight = false;
-		_animation.update(1, .005f, _facingRight, _posY, _resizeFactor);
-	}
-
-	// Slash
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && !_slashing) {
-		_slashing = true;
-		_animation.update(2, 1.f, _facingRight, _posY, _resizeFactor);
 	}
 }
 
@@ -133,6 +158,7 @@ void Player::_checkCollisions(const Map &map) {
 	_checkTilePosition(map, collideTilePosition, _posX, _posY + _height);
 	_checkTilePosition(map, collideTilePosition, _posX + _width, _posY + _height);
 
+	sf::Vector2i indices;
 	// Check top edge to top right
 	for (int i = _posX + TILE_W_H; i < (_width + _posX); i += TILE_W_H) {
 		_checkTilePosition(map, collideTilePosition, i, _posY);
@@ -178,18 +204,18 @@ void Player::_checkCollisions(const Map &map) {
 	for (int i = 0; i < collideTilePosition.size(); i++) {
 		_collideWithTile(collideTilePosition[i]);
 	}
-
-	_updatePosition();
 }
 
 void Player::_checkTilePosition(const Map& map, std::vector<sf::Vector2f>& collideTilePosition, float x, float y) {
 
 	sf::Vector2i cornerPos = sf::Vector2i(std::floor(x / TILE_W_H), std::floor(y / TILE_W_H));
 
-	if (map._tiles[cornerPos.y][cornerPos.x].tileType != 0) {
-		collideTilePosition.push_back(sf::Vector2f((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2), (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2)));
+	if (cornerPos.y < map._tiles.size() && cornerPos.x < map._tiles[cornerPos.y].size()) {
+		if (map._tiles[cornerPos.y][cornerPos.x].tileType != 0) {
+			collideTilePosition.push_back(sf::Vector2f((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2), (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2)));
+		}
+		else _falling = true;
 	}
-	else _falling = true;
 }
 
 void Player::_collideWithTile(sf::Vector2f pos) {
@@ -228,18 +254,13 @@ sf::Vector2f Player::getPosition() {
 	return sf::Vector2f(_posX, _posY);
 }
 
-void Player::doneSlashing()
-{
-	_slashing = false;
-	_animation.update(0, 0.01f, _facingRight, _posY, _resizeFactor);
-}
-
 void Player::_updatePosition() {
+	// TODO: make this more accurate (get width/height from current frame)
+	_width = _currentAnimation->getFrame(0).width;//_idleAnimation.getFrame(0).width;
+	_height = _currentAnimation->getFrame(0).height; //_idleAnimation.getFrame(0).height;
+
     // Update the player's position
     _setPosition(_posX, _posY);
-
-	_width = abs(_animation.uvRect.width) * _resizeFactor;
-	_height = _animation.uvRect.height * _resizeFactor;
 }
 
 void Player::_setSpriteScale(float scale)
@@ -257,7 +278,8 @@ void Player::_setPosition(float x, float y) {
 
 void Player::draw(sf::RenderWindow &window, bool drawBorder)
 {
-	window.draw(_sprite);
+	// Test new animation stuff
+	window.draw(animatedSprite);
 
 	if (drawBorder) {
 		sf::FloatRect border = _sprite.getGlobalBounds();
