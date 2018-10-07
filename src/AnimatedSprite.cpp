@@ -6,7 +6,7 @@ AnimatedSprite::AnimatedSprite(sf::Time frameTime, bool paused, bool looped) :
 
 }
 
-void AnimatedSprite::setAnimation(const Banimation& animation)
+void AnimatedSprite::setAnimation(const Animation& animation)
 {
 	m_animation = &animation;
 	m_texture = m_animation->getSpriteSheet();
@@ -24,7 +24,7 @@ void AnimatedSprite::play()
 	m_isPaused = false;
 }
 
-void AnimatedSprite::play(const Banimation& animation)
+void AnimatedSprite::play(const Animation& animation)
 {
 	if (getAnimation() != &animation)
 		setAnimation(animation);
@@ -57,7 +57,7 @@ void AnimatedSprite::setColor(const sf::Color& color)
 	m_vertices[3].color = color;
 }
 
-const Banimation* AnimatedSprite::getAnimation() const
+const Animation* AnimatedSprite::getAnimation() const
 {
 	return m_animation;
 }

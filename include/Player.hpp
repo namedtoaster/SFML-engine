@@ -12,7 +12,7 @@
 #include "Constants.h"
 #include "Map.hpp"
 #include "Animation.h"
-#include "Banimation.h"
+#include "Animation.h"
 #include "AnimatedSprite.h"
 
 class Player {
@@ -57,10 +57,10 @@ private:
 	bool _slashing;
     sf::Sprite _sprite;
 	sf::Texture _texture;
-	const Banimation* _currentAnimation;
-	Banimation _idleAnimation;
-	Banimation _runningAnimation;
-	Banimation _slashingAnimation;
+	const Animation* _currentAnimation;
+	Animation _idleAnimation;
+	Animation _runningAnimation;
+	Animation _slashingAnimation;
 	AnimatedSprite animatedSprite;
 	friend class Animation;
 };
