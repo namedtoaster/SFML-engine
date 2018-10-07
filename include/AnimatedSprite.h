@@ -7,7 +7,7 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/System/Vector2.hpp>
 
-#include "Banimation.h"
+#include "Animation.h"
 
 class AnimatedSprite : public sf::Drawable, public sf::Transformable
 {
@@ -15,15 +15,15 @@ public:
 	explicit AnimatedSprite(sf::Time frameTime = sf::seconds(0.2f), bool paused = false, bool looped = true);
 
 	void update(sf::Time deltaTime);
-	void setAnimation(const Banimation& animation);
+	void setAnimation(const Animation& animation);
 	void setFrameTime(sf::Time time);
 	void play();
-	void play(const Banimation& animation);
+	void play(const Animation& animation);
 	void pause();
 	void stop();
 	void setLooped(bool looped);
 	void setColor(const sf::Color& color);
-	const Banimation* getAnimation() const;
+	const Animation* getAnimation() const;
 	sf::FloatRect getLocalBounds() const;
 	sf::FloatRect getGlobalBounds() const;
 	bool isLooped() const;
@@ -33,7 +33,7 @@ public:
 
 	std::size_t m_currentFrame;
 private:
-	const Banimation* m_animation;
+	const Animation* m_animation;
 	sf::Time m_frameTime;
 	sf::Time m_currentTime;
 	

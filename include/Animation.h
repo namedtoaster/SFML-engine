@@ -1,26 +1,24 @@
-#pragma once
+#ifndef ANIMATION_INCLUDE
+#define ANIMATION_INCLUDE
 
-#include <SFML/Graphics.hpp>
+#include <vector>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/Texture.hpp>
 
-class Animation {
+class Animation
+{
 public:
-	Animation(sf::Vector2u imageCount, float switchTime);
+	Animation();
 
-	void setTexture(const sf::Texture&);
-	void update(int, float, bool, float&, float);
-	void addAnimation(std::vector<sf::IntRect>);
-	sf::Vector2u& getCurrentImage();
-	std::vector<std::vector<sf::IntRect>>& getFrames();
-public:
-	sf::IntRect uvRect;
-	std::vector<std::vector<sf::IntRect>> frames;
+	void addFrame(sf::IntRect rect);
+	void setSpriteSheet(const sf::Texture& texture);
+	const sf::Texture* getSpriteSheet() const;
+	std::size_t getSize() const;
+	const sf::IntRect& getFrame(std::size_t n) const;
 
 private:
-	sf::Vector2u imageCount;
-	sf::Vector2u currentImage;
-	float totalTime;
-	float switchTime;
-	bool faceRight;
-private:
-	void _updateFloor(float&, float);
+	std::vector<sf::IntRect> m_frames;
+	const sf::Texture* m_texture;
 };
+
+#endif // ANIMATION_INCLUDE
