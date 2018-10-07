@@ -6,7 +6,7 @@ class Animation {
 public:
 	Animation(sf::Vector2u imageCount, float switchTime);
 
-	void setTexture(sf::Texture&);
+	void setTexture(const sf::Texture&);
 	void update(int, float, bool, float&, float);
 	void addAnimation(std::vector<sf::IntRect>);
 	sf::Vector2u& getCurrentImage();

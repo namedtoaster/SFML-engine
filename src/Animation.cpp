@@ -37,7 +37,7 @@ Animation::Animation(sf::Vector2u imageCount, float switchTime) {
     this->addAnimation(frames);
 }
 
-void Animation::setTexture(sf::Texture &texture) {
+void Animation::setTexture(const sf::Texture &texture) {
     uvRect.width = texture.getSize().x / float(imageCount.x);
     uvRect.height = texture.getSize().y / float(imageCount.y);
 }
