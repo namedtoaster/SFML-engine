@@ -23,7 +23,7 @@ Player::Player() :
 	_accelY(0.0f),
 	_canJump(true),
 	_facingRight(true),
-	_resizeFactor(1.f),
+	_resizeFactor(2.f),
 	_slashing(false),
 	animatedSprite(sf::seconds(0.18), true, false)
 {
@@ -31,50 +31,51 @@ Player::Player() :
     _texWidth = _texture.getSize().x;
     _texHeight = _texture.getSize().y;
 
-	// Scale as desired
-	//_setSpriteScale(_resizeFactor);
-
 
 	// Load the sprite sheet
 	if (!_texture.loadFromFile("assets/adventurer-Sheet.png")) {
 		return;
 	}
 
-	// Set idle animation
+	// Create idle animation
 	_idleAnimation.setSpriteSheet(_texture);
 	_idleAnimation.addFrame(sf::IntRect(14, 7, 19, 29));
 	_idleAnimation.addFrame(sf::IntRect(66, 6, 17, 30));
 	_idleAnimation.addFrame(sf::IntRect(115, 6, 19, 30));
 	_idleAnimation.addFrame(sf::IntRect(163, 7, 20, 29));
 
-	// Set running animation
+	// Create running animation
 	_runningAnimation.setSpriteSheet(_texture);
 	_runningAnimation.addFrame(sf::IntRect(67, 45, 20, 28));
 	_runningAnimation.addFrame(sf::IntRect(116, 46, 20, 27));
 	_runningAnimation.addFrame(sf::IntRect(166, 48, 20, 25));
 
-	// Set slashing animation
+	// Create slashing animation
 	_slashingAnimation.setSpriteSheet(_texture);
 	_slashingAnimation.addFrame(sf::IntRect(115, 222, 34, 36));
 	_slashingAnimation.addFrame(sf::IntRect(165, 222, 27, 36));
 	_slashingAnimation.addFrame(sf::IntRect(215, 226, 19, 32));
 
+	// Finalize animation variables
 	_currentAnimation = &_idleAnimation;
 	animatedSprite.setLooped(false);
+
+	// Scale as desired
+	_setSpriteScale(_resizeFactor);
 }
 
 void Player::update(sf::RenderWindow &window, const Map& map, sf::Time frameTime) {
 	// Movement and collisions
 	_applyGravity();
-	_checkCollisions(map); // TODO: make work when player is bigger than tiles -- super buggy when it is right now
+	_checkCollisions(map);
 	_processEvents(window);
-	_updatePosition();
+	_updatePosition(map);
 
-	// Animation stuff
+	// Animation
 	animatedSprite.play(*_currentAnimation);
 	animatedSprite.setPosition(sf::Vector2f(_posX, _posY));
 	animatedSprite.update(frameTime);
-	animatedSprite.pause();
+	std::cout << _velY << std::endl;
 }
 
 void Player::_processEvents(sf::RenderWindow &window) {
@@ -159,20 +160,20 @@ void Player::_checkCollisions(const Map &map) {
 	_checkTilePosition(map, collideTilePosition, _posX + _width, _posY + _height);
 
 	sf::Vector2i indices;
-	// Check top edge to top right
+	// Check top edge
 	for (int i = _posX + TILE_W_H; i < (_width + _posX); i += TILE_W_H) {
 		_checkTilePosition(map, collideTilePosition, i, _posY);
 	}
-	// Check left edge to bottom left
+	// Check left edge
 	for (int i = _posY + TILE_W_H; i < (_height + _posY); i += TILE_W_H) {
 		_checkTilePosition(map, collideTilePosition, _posX, i);
 	}
-	// Check bottom edge to bottom right
+	// Check bottom edge
 	int bottomY = _posY + _height;
 	for (int i = _posX + TILE_W_H; i < (_width + _posX); i += TILE_W_H) {
 		_checkTilePosition(map, collideTilePosition, i, bottomY);
 	}
-	// Check right edge to bottom right
+	// Check right edge
 	int rightX = _posX + _width;
 	for (int i = _posY + TILE_W_H; i < (_height + _posY); i += TILE_W_H) {
 		_checkTilePosition(map, collideTilePosition, rightX, i);
@@ -254,10 +255,39 @@ sf::Vector2f Player::getPosition() {
 	return sf::Vector2f(_posX, _posY);
 }
 
-void Player::_updatePosition() {
+void Player::_updatePosition(const Map& map) {
 	// TODO: make this more accurate (get width/height from current frame)
-	_width = _currentAnimation->getFrame(0).width;//_idleAnimation.getFrame(0).width;
-	_height = _currentAnimation->getFrame(0).height; //_idleAnimation.getFrame(0).height;
+	_width = _currentAnimation->getFrame(0).width * _resizeFactor;//_idleAnimation.getFrame(0).width;
+	_height = _currentAnimation->getFrame(0).height * _resizeFactor; //_idleAnimation.getFrame(0).height;
+
+	// Move player up, down, left or right if leaving map
+
+	// TODO: the code here assumes that all four edges of the map have a wall/ground
+	// Might want to update to consider the possibility there is no wall/ground (still don't want to leave the map)
+
+	float diff;
+	int yIndex = _posY / TILE_W_H;
+	// Don't fall through the ground
+	if (_posY + _height > map._tiles.size() * TILE_W_H - TILE_W_H) {
+		diff = (_posY + _height) - (map._tiles.size() * TILE_W_H - TILE_W_H);
+		_posY -= diff;
+		_falling = false;
+	}
+	// Don't go through the top of the map
+	if (_posY < TILE_W_H) {
+		diff = TILE_W_H - _posY;
+		_posY += diff;
+	}
+	// Don't go through the left side of the map
+	if (_posX < TILE_W_H) {
+		diff = TILE_W_H - _posX;
+		_posX += diff;
+	}
+	// Don't go through the right side of the map
+	if (_posX > map._tiles[yIndex].size() * TILE_W_H - TILE_W_H) {
+		diff = _posX - map._tiles[yIndex].size() * TILE_W_H - TILE_W_H;
+		_posX -= diff;
+	}
 
     // Update the player's position
     _setPosition(_posX, _posY);
@@ -267,7 +297,7 @@ void Player::_setSpriteScale(float scale)
 {
 	_resizeFactor = scale;
 
-	_sprite.setScale(sf::Vector2f(scale, scale));
+	animatedSprite.setScale(sf::Vector2f(scale, scale));
 	_width *= scale;
 	_height *= scale;
 }
