@@ -44,6 +44,25 @@ Game::Game() :
     _init();
 }
 
+void Game::_init() {
+	// Window initialization
+	_window.setFramerateLimit(60);
+	_window.setVerticalSyncEnabled(true);
+
+	// Set the Icon
+	sf::Image icon;
+	if (!icon.loadFromFile("assets/icon.png")) {
+		return;
+	}
+	_window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+
+	// Zoom in a bit
+	_zoom(_zoomLevel);
+
+	// Run the game
+	run();
+}
+
 void Game::run() {
 	// Initialize animation variables
 	sf::Clock frameClock;
@@ -62,25 +81,6 @@ void Game::run() {
         
         _draw();
     }
-}
-
-void Game::_init() {
-    // Window initialization
-    _window.setFramerateLimit(60);
-    _window.setVerticalSyncEnabled(true);
-    
-    // Set the Icon
-    sf::Image icon;
-    if (!icon.loadFromFile("assets/icon.png")) {
-      return;
-    }
-    _window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-
-	// Zoom in a bit
-	_zoom(_zoomLevel);
-    
-    // Run the game
-    run();
 }
 
 void Game::_updateWindow() {

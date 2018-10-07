@@ -36,7 +36,7 @@ private:
 	void _checkTilePosition(const Map&, std::vector<sf::Vector2f>&, float, float);
 	void _collideWithTile(sf::Vector2f);
 	void _setPosition(float, float);
-	void _updatePosition();
+	void _updatePosition(const Map&);
 	void _setSpriteScale(float);
 	void _idle();
 private:
