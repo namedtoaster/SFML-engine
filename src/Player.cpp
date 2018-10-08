@@ -58,7 +58,6 @@ Player::Player() :
 
 	// Finalize animation variables
 	_currentAnimation = &_idleAnimation;
-	animatedSprite.setLooped(false);
 
 	// Scale as desired
 	_setSpriteScale(_resizeFactor);
@@ -74,14 +73,14 @@ void Player::update(sf::RenderWindow &window, const Map& map, sf::Time frameTime
 	// Animation
 	animatedSprite.play(*_currentAnimation);
 	animatedSprite.setPosition(sf::Vector2f(_posX, _posY));
-	animatedSprite.update(frameTime);
-	std::cout << _velY << std::endl;
+	animatedSprite.update(frameTime, _facingRight);
 }
 
 void Player::_processEvents(sf::RenderWindow &window) {
 	if (!_slashing) {
 		_currentAnimation = &_idleAnimation;
 
+		// TODO: for some reason, the direction change is one frame late. Not sure why
 		// Move right
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
@@ -99,7 +98,7 @@ void Player::_processEvents(sf::RenderWindow &window) {
 			_currentAnimation = &_runningAnimation;
 		}
 		// Slash
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
 			_currentAnimation = &_slashingAnimation;
 			_slashing = true;
 		}
@@ -264,6 +263,8 @@ void Player::_updatePosition(const Map& map) {
 
 	// TODO: the code here assumes that all four edges of the map have a wall/ground
 	// Might want to update to consider the possibility there is no wall/ground (still don't want to leave the map)
+	// TODO: At the beginning, when the player is dropped into the map, he seems to shift right or left when hitting the ground 
+	// Figure out why this is happning
 
 	float diff;
 	int yIndex = _posY / TILE_W_H;
