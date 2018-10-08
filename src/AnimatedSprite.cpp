@@ -1,4 +1,5 @@
 #include "AnimatedSprite.h"
+#include <iostream>
 
 AnimatedSprite::AnimatedSprite(sf::Time frameTime, bool paused, bool looped) :
 	m_animation(NULL), m_frameTime(frameTime), m_currentFrame(0), m_isPaused(paused), m_isLooped(looped), m_texture(NULL)
@@ -104,8 +105,15 @@ void AnimatedSprite::setFrame(std::size_t newFrame, bool resetTime)
 		m_vertices[2].position = sf::Vector2f(static_cast<float>(rect.width), static_cast<float>(rect.height));
 		m_vertices[3].position = sf::Vector2f(static_cast<float>(rect.width), 0.f);
 
+		
 		float left = static_cast<float>(rect.left) + 0.0001f;
 		float right = left + static_cast<float>(rect.width);
+
+		if (!_facingRight) {
+			left = left + static_cast<float>(rect.width);
+			right = static_cast<float>(rect.left) + 0.0001f;
+		}
+
 		float top = static_cast<float>(rect.top);
 		float bottom = top + static_cast<float>(rect.height);
 
@@ -119,8 +127,9 @@ void AnimatedSprite::setFrame(std::size_t newFrame, bool resetTime)
 		m_currentTime = sf::Time::Zero;
 }
 
-void AnimatedSprite::update(sf::Time deltaTime)
+void AnimatedSprite::update(sf::Time deltaTime, bool facingRight)
 {
+	_facingRight = facingRight;
 	// if not paused and we have a valid animation
 	if (!m_isPaused && m_animation)
 	{

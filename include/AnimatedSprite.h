@@ -14,7 +14,7 @@ class AnimatedSprite : public sf::Drawable, public sf::Transformable
 public:
 	explicit AnimatedSprite(sf::Time frameTime = sf::seconds(0.2f), bool paused = false, bool looped = true);
 
-	void update(sf::Time deltaTime);
+	void update(sf::Time deltaTime, bool);
 	void setAnimation(const Animation& animation);
 	void setFrameTime(sf::Time time);
 	void play();
@@ -39,6 +39,7 @@ private:
 	
 	bool m_isPaused;
 	bool m_isLooped;
+	bool _facingRight;
 	const sf::Texture* m_texture;
 	sf::Vertex m_vertices[4];
 
