@@ -77,7 +77,11 @@ void Player::update(sf::RenderWindow &window, const Map& map, sf::Time frameTime
 }
 
 void Player::_processEvents(sf::RenderWindow &window) {
-	if (!_slashing) {
+	if (_slashing) {
+		if (animatedSprite.m_currentFrame == 2)
+			_slashing = false;
+	}
+	else {
 		_currentAnimation = &_idleAnimation;
 
 		// TODO: for some reason, the direction change is one frame late. Not sure why
@@ -97,20 +101,16 @@ void Player::_processEvents(sf::RenderWindow &window) {
 			_facingRight = false;
 			_currentAnimation = &_runningAnimation;
 		}
-		// Slash
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
-			_currentAnimation = &_slashingAnimation;
-			_slashing = true;
-		}
-	}
-	else {
-		if (animatedSprite.m_currentFrame == 2)
-			_slashing = false;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 		if (!_falling)
 			_jump();
+	}
+	// Slash
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+		_currentAnimation = &_slashingAnimation;
+		_slashing = true;
 	}
 }
 
