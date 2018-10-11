@@ -76,8 +76,8 @@ void Game::run() {
 		_updateWindow();
 		_updateView();
         
-        if (_state == PLAY)
-            _updatePlayers(frameTime);
+		if (_state == PLAY)
+			_updatePlayers(frameTime);
         
         _draw();
     }
@@ -129,7 +129,8 @@ void Game::_updateView() {
 }
 
 void Game::_updatePlayers(sf::Time frameTime) {
-	_player.update(_window, _map, frameTime);
+	_player.update(_map, frameTime);
+	_map.update(frameTime);
 }
 
 // TODO: Find a more elegant way of drawing everything (maybe find or make a way to stack order of drawings -- things that move and things that don't)
@@ -142,7 +143,7 @@ void Game::_draw() {
 	_window.setView(_view);
 
 	// Draw tiles
-	_map.draw(_window, false);
+	_map.draw(_window, true);
 
 	// Draw player
 	_player.draw(_window, false);

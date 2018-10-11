@@ -63,11 +63,11 @@ Player::Player() :
 	_setSpriteScale(_resizeFactor);
 }
 
-void Player::update(sf::RenderWindow &window, const Map& map, sf::Time frameTime) {
+void Player::update(const Map& map, sf::Time frameTime) {
 	// Movement and collisions
 	_applyGravity();
 	_checkCollisions(map);
-	_processEvents(window);
+	_processEvents();
 	_updatePosition(map);
 
 	// Animation
@@ -76,7 +76,7 @@ void Player::update(sf::RenderWindow &window, const Map& map, sf::Time frameTime
 	animatedSprite.update(frameTime, _facingRight);
 }
 
-void Player::_processEvents(sf::RenderWindow &window) {
+void Player::_processEvents() {
 	if (_slashing) {
 		if (animatedSprite.m_currentFrame == 2)
 			_slashing = false;
@@ -268,6 +268,8 @@ void Player::_updatePosition(const Map& map) {
 
 	float diff;
 	int yIndex = _posY / TILE_W_H;
+	int xIndex = _posX / TILE_W_H;
+
 	// Don't fall through the ground
 	if (_posY + _height > map._tiles.size() * TILE_W_H - TILE_W_H) {
 		diff = (_posY + _height) - (map._tiles.size() * TILE_W_H - TILE_W_H);

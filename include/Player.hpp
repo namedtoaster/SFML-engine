@@ -19,13 +19,13 @@ class Player {
 public:
     Player();
     
-	void update(sf::RenderWindow&, const Map&, sf::Time);
+	void update(const Map&, sf::Time);
 	void draw(sf::RenderWindow&, bool);
 	float getHeight();
     sf::Vector2f getPosition();
 
 private:
-	void _processEvents(sf::RenderWindow&);
+	void _processEvents();
 	void _moveRight();
 	void _moveLeft();
 	void _moveDown();
@@ -38,7 +38,6 @@ private:
 	void _setPosition(float, float);
 	void _updatePosition(const Map&);
 	void _setSpriteScale(float);
-	void _idle();
 private:
     float _posX;
     float _posY;
