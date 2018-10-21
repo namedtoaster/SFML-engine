@@ -24,11 +24,12 @@ enum GameState { PLAY, QUIT, PAUSE };
 class Game {
 public:
     Game();
- 
-    void run();
 
 private:
     void _init();
+	void _initializeSystem();
+	void _initializeMedia();
+	void _run();
 	void _updateWindow();
     void _updateView();
 	void _updatePlayers(sf::Time);
@@ -40,14 +41,21 @@ private:
 	float _deltaTime;
 	float _zoomLevel;
     bool _isJumping;
+	std::vector<void(*)()> _drawfucntions;
+
     sf::RenderWindow _window;
+	sf::Image _icon;
     sf::View _view;
 	sf::Clock _clock;
 	sf::Sprite _bg;
+	sf::Texture _bgTexture;
 	sf::Sprite _pauseSword;
+	sf::Texture _pauseSwordTexture;
 	sf::Sprite _vignette;
+	sf::Texture _vignetteTexture;
 	sf::Text _score;
     sf::Font _font;
+
     Player _player;
     GameState _state;
     Map _map;
