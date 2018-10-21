@@ -18,12 +18,19 @@ Map::Map(const std::string &filename) {
     while (getline(input, line)) {
 		_tiles.push_back(std::vector<Tile>());
 		for (int j = 0; j < line.size(); j++) {
-			_tiles[i].push_back(Tile(line[j] - '0', (float)j * _tileW, (float)i * _tileH));
+			if (line[j] - '0' == 3) {
+				_enemies.push_back(AnimatedSprite(sf::seconds(0.18), true, false));
+				// TODO: get actual size of sprite and have it get updated through playing of animation
+				// Probably need to have an option in that in the animation class
+				_enemies[_enemies.size() - 1].setPosition((float)j * _tileW, (float)i * _tileH);
+			}
+			else _tiles[i].push_back(Tile(line[j] - '0', (float)j * _tileW, (float)i * _tileH));
 		}
 		i++;
     }
     
-    // load the textures - 0 = wall, 1 = ground, 2 = lava
+	// TODO: Find a much more dynamic and neat way of doing this
+    // load the textures - 0 = wall, 1 = ground, 2 = lava, 3 = enemy
 	if (!_textures[0].loadFromFile("assets/BrickGrey.png"))
 		return;
 	if (!_textures[1].loadFromFile("assets/purple-brick.png"))
@@ -33,26 +40,57 @@ Map::Map(const std::string &filename) {
 
 	// Apply the textures to the sprites
 	sf::Sprite wall; sf::Sprite ground; sf::Sprite lava;
-	_sprites.push_back(wall); _sprites.push_back(ground); _sprites.push_back(lava);
-	_sprites[0].setTexture(_textures[0]); _sprites[1].setTexture(_textures[1]); _sprites[2].setTexture(_textures[2]);
+
+	_tileSprites.push_back(wall); _tileSprites.push_back(ground); _tileSprites.push_back(lava);
+
+	_tileSprites[0].setTexture(_textures[0]); _tileSprites[1].setTexture(_textures[1]); _tileSprites[2].setTexture(_textures[2]);
+
+	// Create enemy animation
+	// TODO: Should probably have some sort of error handling when loading files and such
+	if (!_enemySpriteSheet.loadFromFile("assets/random.png")) {
+		return;
+	}
+
+	_enemyAnimation.setSpriteSheet(_enemySpriteSheet);
+	_enemyAnimation.addFrame(sf::IntRect(342, 55, 35, 29));
+	_enemyAnimation.addFrame(sf::IntRect(386, 58, 52, 26));
+	_enemyAnimation.addFrame(sf::IntRect(449, 59, 47, 26));
+	_enemyAnimation.addFrame(sf::IntRect(503, 58, 35, 28));
+	_currentAnimation = &_enemyAnimation;
 }
 
 std::vector<sf::Sprite> Map::getSprites() {
-    return _sprites;
+    return _tileSprites;
 }
 
 sf::Texture* Map::getTextures() {
 	return _textures;
 }
 
+void Map::update(sf::Time frameTime)
+{
+	for (int i = 0; i < _enemies.size(); i++) {
+		
+		_enemies[i].play(*_currentAnimation);
+		_enemies[i].update(frameTime, false);
+	}
+}
+
 void Map::draw(sf::RenderWindow &window, bool drawGrid) {
+	// Draw the tiles
 	for (int i = 0; i < _tiles.size(); i++) {
 		for (int j = 0; j < _tiles[i].size(); j++) {
-			_sprites[_tiles[i][j].tileType].setPosition(_tiles[i][j].x, _tiles[i][j].y);
-			window.draw(_sprites[_tiles[i][j].tileType]);
+			_tileSprites[_tiles[i][j].tileType].setPosition(_tiles[i][j].x, _tiles[i][j].y);
+			window.draw(_tileSprites[_tiles[i][j].tileType]);
 		}
-	}	
+	}
 
+	// Draw the enemies
+	for (int i = 0; i < _enemies.size(); i++) {
+		window.draw(_enemies[i]);
+	}
+
+	// Draw the grid
 	if (drawGrid) {
 		std::vector<std::vector<std::vector<sf::Vertex>>> _vertices;
 		for (int i = 0; i < _tiles.size(); i++) {

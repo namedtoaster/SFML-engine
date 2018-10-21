@@ -21,71 +21,71 @@ Player::Player() :
 	_velY(0.0f),
 	_accelX(0.0f),
 	_accelY(0.0f),
-	_animation(sf::Vector2u(7, 11), 0.15f),
 	_canJump(true),
 	_facingRight(true),
-	_resizeFactor(1.f),
-	_slashing(false)
+	_resizeFactor(2.f),
+	_slashing(false),
+	animatedSprite(sf::seconds(0.18), true, false)
 {
-	// Load the sprite sheet
-    if (!_texture.loadFromFile("assets/adventurer-Sheet.png")) {
-      return;
-    }
-	_animation.setTexture(_texture);
-    
-    // Initialize sprite/texture
-    _sprite.setTexture(_texture);
+	// Initialize Media
+	_initializeMedia();
+
+	// Initialize Animations
+	_initializeAnimations();
 
     // Initialize members vars
     _texWidth = _texture.getSize().x;
     _texHeight = _texture.getSize().y;
-	_width = _animation.uvRect.width;
-	_height = _animation.uvRect.height;
-
-	// Scale as desired
-	_setSpriteScale(_resizeFactor);
 }
 
-void Player::update(sf::RenderWindow &window, const Map& map, float deltaTime) {
+void Player::update(const Map& map, const sf::Time frameTime) {
 	// Movement and collisions
 	_applyGravity();
-	_checkCollisions(map); // TODO: make work when player is bigger than tiles -- super buggy when it is right now
-	_processEvents(window, deltaTime);
-	_updatePosition();
+	_checkCollisions(map);
+	_processEvents();
+	_updatePosition(map);
 
-	// Texture and images
-	_sprite.setTextureRect(_animation.uvRect);
+	// Animation
+	animatedSprite.play(*_currentAnimation);
+	animatedSprite.setPosition(sf::Vector2f(_posX, _posY));
+	animatedSprite.update(frameTime, _facingRight);
 }
 
-void Player::_processEvents(sf::RenderWindow &window, float deltaTime) {
-	_animation.update(0, 0.01f, _facingRight, _posY, _resizeFactor);
+void Player::_processEvents() {
+	if (_slashing) {
+		if (animatedSprite.m_currentFrame == 2)
+			_slashing = false;
+	}
+	else {
+		_currentAnimation = &_idleAnimation;
+
+		// TODO: for some reason, the direction change is one frame late. Not sure why
+		// Move right
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		{
+			// Update the player position
+			_moveRight();
+			_facingRight = true;
+			_currentAnimation = &_runningAnimation;
+		}
+		// Move left
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		{
+			// Update the player position
+			_moveLeft();
+			_facingRight = false;
+			_currentAnimation = &_runningAnimation;
+		}
+	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 		if (!_falling)
 			_jump();
 	}
-
-	// Move right
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-	{
-		// Update the player position
-		_moveRight();
-		_facingRight = true;
-		_animation.update(1, 0.005f, _facingRight, _posY, _resizeFactor);
-	}
-	// Move left
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-	{
-		// Update the player position
-		_moveLeft();
-		_facingRight = false;
-		_animation.update(1, .005f, _facingRight, _posY, _resizeFactor);
-	}
-
 	// Slash
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && !_slashing) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+		_currentAnimation = &_slashingAnimation;
 		_slashing = true;
-		_animation.update(2, 1.f, _facingRight, _posY, _resizeFactor);
 	}
 }
 
@@ -133,20 +133,21 @@ void Player::_checkCollisions(const Map &map) {
 	_checkTilePosition(map, collideTilePosition, _posX, _posY + _height);
 	_checkTilePosition(map, collideTilePosition, _posX + _width, _posY + _height);
 
-	// Check top edge to top right
+	sf::Vector2i indices;
+	// Check top edge
 	for (int i = _posX + TILE_W_H; i < (_width + _posX); i += TILE_W_H) {
 		_checkTilePosition(map, collideTilePosition, i, _posY);
 	}
-	// Check left edge to bottom left
+	// Check left edge
 	for (int i = _posY + TILE_W_H; i < (_height + _posY); i += TILE_W_H) {
 		_checkTilePosition(map, collideTilePosition, _posX, i);
 	}
-	// Check bottom edge to bottom right
+	// Check bottom edge
 	int bottomY = _posY + _height;
 	for (int i = _posX + TILE_W_H; i < (_width + _posX); i += TILE_W_H) {
 		_checkTilePosition(map, collideTilePosition, i, bottomY);
 	}
-	// Check right edge to bottom right
+	// Check right edge
 	int rightX = _posX + _width;
 	for (int i = _posY + TILE_W_H; i < (_height + _posY); i += TILE_W_H) {
 		_checkTilePosition(map, collideTilePosition, rightX, i);
@@ -178,21 +179,21 @@ void Player::_checkCollisions(const Map &map) {
 	for (int i = 0; i < collideTilePosition.size(); i++) {
 		_collideWithTile(collideTilePosition[i]);
 	}
-
-	_updatePosition();
 }
 
 void Player::_checkTilePosition(const Map& map, std::vector<sf::Vector2f>& collideTilePosition, float x, float y) {
 
 	sf::Vector2i cornerPos = sf::Vector2i(std::floor(x / TILE_W_H), std::floor(y / TILE_W_H));
 
-	if (map._tiles[cornerPos.y][cornerPos.x].tileType != 0) {
-		collideTilePosition.push_back(sf::Vector2f((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2), (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2)));
+	if (cornerPos.y < map._tiles.size() && cornerPos.x < map._tiles[cornerPos.y].size()) {
+		if (map._tiles[cornerPos.y][cornerPos.x].tileType != 0) {
+			collideTilePosition.push_back(sf::Vector2f((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2), (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2)));
+		}
+		else _falling = true;
 	}
-	else _falling = true;
 }
 
-void Player::_collideWithTile(sf::Vector2f pos) {
+void Player::_collideWithTile(const sf::Vector2f pos) {
 	const float tileRadius = (float)TILE_W_H / 2.f;
 	const float minDistanceX = _width / 2 + tileRadius;
 	const float minDistanceY = _height / 2 + tileRadius;
@@ -224,40 +225,102 @@ void Player::_collideWithTile(sf::Vector2f pos) {
 	}
 }
 
-sf::Vector2f Player::getPosition() {
+const sf::Vector2f Player::getPosition() {
 	return sf::Vector2f(_posX, _posY);
 }
 
-void Player::doneSlashing()
-{
-	_slashing = false;
-	_animation.update(0, 0.01f, _facingRight, _posY, _resizeFactor);
-}
+void Player::_updatePosition(const Map& map) {
+	// TODO: make this more accurate (get width/height from current frame)
+	_width = _currentAnimation->getFrame(0).width * _resizeFactor;//_idleAnimation.getFrame(0).width;
+	_height = _currentAnimation->getFrame(0).height * _resizeFactor; //_idleAnimation.getFrame(0).height;
 
-void Player::_updatePosition() {
+	// Move player up, down, left or right if leaving map
+
+	// TODO: the code here assumes that all four edges of the map have a wall/ground
+	// Might want to update to consider the possibility there is no wall/ground (still don't want to leave the map)
+	// TODO: At the beginning, when the player is dropped into the map, he seems to shift right or left when hitting the ground 
+	// Figure out why this is happning
+
+	float diff;
+	int yIndex = _posY / TILE_W_H;
+	int xIndex = _posX / TILE_W_H;
+
+	// Don't fall through the ground
+	if (_posY + _height > map._tiles.size() * TILE_W_H - TILE_W_H) {
+		diff = (_posY + _height) - (map._tiles.size() * TILE_W_H - TILE_W_H);
+		_posY -= diff;
+		_falling = false;
+	}
+	// Don't go through the top of the map
+	if (_posY < TILE_W_H) {
+		diff = TILE_W_H - _posY;
+		_posY += diff;
+	}
+	// Don't go through the left side of the map
+	if (_posX < TILE_W_H) {
+		diff = TILE_W_H - _posX;
+		_posX += diff;
+	}
+	// Don't go through the right side of the map
+	if (_posX > map._tiles[yIndex].size() * TILE_W_H - TILE_W_H) {
+		diff = _posX - map._tiles[yIndex].size() * TILE_W_H - TILE_W_H;
+		_posX -= diff;
+	}
+
     // Update the player's position
     _setPosition(_posX, _posY);
-
-	_width = abs(_animation.uvRect.width) * _resizeFactor;
-	_height = _animation.uvRect.height * _resizeFactor;
 }
 
-void Player::_setSpriteScale(float scale)
+void Player::_setSpriteScale(const float scale)
 {
 	_resizeFactor = scale;
 
-	_sprite.setScale(sf::Vector2f(scale, scale));
+	animatedSprite.setScale(sf::Vector2f(scale, scale));
 	_width *= scale;
 	_height *= scale;
 }
 
-void Player::_setPosition(float x, float y) {
+void Player::_initializeMedia()
+{
+	_texture.loadFromFile("assets/adventurer-Sheet.png");
+}
+
+void Player::_initializeAnimations()
+{
+	// Create idle animation
+	_idleAnimation.setSpriteSheet(_texture);
+	_idleAnimation.addFrame(sf::IntRect(14, 7, 19, 29));
+	_idleAnimation.addFrame(sf::IntRect(66, 6, 17, 30));
+	_idleAnimation.addFrame(sf::IntRect(115, 6, 19, 30));
+	_idleAnimation.addFrame(sf::IntRect(163, 7, 20, 29));
+
+	// Create running animation
+	_runningAnimation.setSpriteSheet(_texture);
+	_runningAnimation.addFrame(sf::IntRect(67, 45, 20, 28));
+	_runningAnimation.addFrame(sf::IntRect(116, 46, 20, 27));
+	_runningAnimation.addFrame(sf::IntRect(166, 48, 20, 25));
+
+	// Create slashing animation
+	_slashingAnimation.setSpriteSheet(_texture);
+	_slashingAnimation.addFrame(sf::IntRect(115, 222, 34, 36));
+	_slashingAnimation.addFrame(sf::IntRect(165, 222, 27, 36));
+	_slashingAnimation.addFrame(sf::IntRect(215, 226, 19, 32));
+
+	// Finalize animation variables
+	_currentAnimation = &_idleAnimation;
+
+	// Scale as desired
+	_setSpriteScale(_resizeFactor);
+}
+
+void Player::_setPosition(const float x, const float y) {
 	_sprite.setPosition(x, y);
 }
 
 void Player::draw(sf::RenderWindow &window, bool drawBorder)
 {
-	window.draw(_sprite);
+	// Test new animation stuff
+	window.draw(animatedSprite);
 
 	if (drawBorder) {
 		sf::FloatRect border = _sprite.getGlobalBounds();
@@ -269,7 +332,7 @@ void Player::draw(sf::RenderWindow &window, bool drawBorder)
 	}
 }
 
-float Player::getHeight()
+const float Player::getHeight()
 {
 	return _height;
 }

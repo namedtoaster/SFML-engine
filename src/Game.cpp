@@ -8,7 +8,6 @@
 
 #include "Game.hpp"
 #include "Animation.h"
-//#include "Constants.h"
 
 Game::Game() : 
 	_window(sf::VideoMode(WIDTH, HEIGHT), "SFML test"),
@@ -19,62 +18,68 @@ Game::Game() :
 	_view(sf::FloatRect(0, 0, WIDTH, HEIGHT)),
 	_zoomLevel(.7f)
 {
-	// Load images
-	sf::Texture bgTxt, swordTxt;
-	bgTxt.loadFromFile("assets/stars.jpg");
-	_bg.setTexture(bgTxt);
-	swordTxt.loadFromFile("assets/pause-sword.png");
-	_pauseSword.setTexture(swordTxt);
-	_pauseSword.scale(2.f, 2.f);
-
-    
-    // Load font
-    if (!_font.loadFromFile("assets/chintzy.ttf"))
-        std::cout << "Cannot load font" << std::endl;
-    _score.setFont(_font);
-	_score.setString("0");
-    _score.setPosition(LEFT_MARG, TOP_MARG);
-    
-	// Vignette
-	sf::Texture text;
-	text.loadFromFile("assets/vignette.png");
-	_vignette.setTexture(text);
-	_vignette.scale(float(WIDTH) / 1510.f, float(HEIGHT) / 1000.f);
-
     _init();
 }
 
-void Game::run() {
+void Game::_init() {
+	// Initialize Media
+	_initializeMedia();
+
+	// Initialize System
+	_initializeSystem();	
+
+	// Run the game
+	_run();
+}
+
+void Game::_initializeSystem()
+{
+	// Window initialization
+	_window.setFramerateLimit(60);
+	_window.setVerticalSyncEnabled(true);
+
+	// Zoom in a bit
+	_zoom(_zoomLevel);
+}
+
+void Game::_initializeMedia()
+{
+	// Load assets
+	_bgTexture.loadFromFile("assets/stars.jpg");
+	_pauseSwordTexture.loadFromFile("assets/pause-sword.png");
+	_vignetteTexture.loadFromFile("assets/vignette.png");
+	_icon.loadFromFile("assets/icon.png");
+	_font.loadFromFile("assets/chintzy.ttf");
+
+	// Assign assets
+	_bg.setTexture(_bgTexture);
+	_pauseSword.setTexture(_pauseSwordTexture);
+	_vignette.setTexture(_vignetteTexture);
+	_score.setFont(_font);
+
+	// Positioning/sizing
+	_pauseSword.scale(2.f, 2.f);
+	_score.setString("0");
+	_score.setPosition(LEFT_MARG, TOP_MARG);
+	_vignette.scale(float(WIDTH) / 1510.f, float(HEIGHT) / 1000.f);
+	_window.setIcon(_icon.getSize().x, _icon.getSize().y, _icon.getPixelsPtr());
+}
+
+void Game::_run() {
+	sf::Clock frameClock;
+
     while (_window.isOpen()) {
-		_deltaTime = _clock.restart().asSeconds();
+		// Update animation timing
+		sf::Time frameTime = frameClock.restart();
 
 		_updateWindow();
 		_updateView();
         
-        if (_state == PLAY)
-            _updatePlayers();
+		if (_state == PLAY)
+			_updatePlayers(frameTime);
         
         _draw();
     }
-}
-
-void Game::_init() {
-    // Window initialization
-    _window.setFramerateLimit(60);
-    _window.setVerticalSyncEnabled(true);
-    
-    // Set the Icon
-    sf::Image icon;
-    if (!icon.loadFromFile("assets/icon.png")) {
-      return;
-    }
-    _window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-
-	// Zoom in a bit
-	_zoom(_zoomLevel);
-    
-    // Run the game
-    run();
 }
 
 void Game::_updateWindow() {
@@ -94,43 +99,33 @@ void Game::_updateWindow() {
             else if (_state == PAUSE)
                 _state = PLAY;
         }
-
-		// TODO: figure out how to smoothly incorporate this
-		/*if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::LControl)
-			_player.doneSlashing();*/
     }
     
     // Window resize
     if (event.type == sf::Event::Resized) {
-        //sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
-		//_view.reset(visibleArea);
-
-		int x_pos = _player.getPosition().x;
-		int y_pos = _player.getPosition().y;
+		// TODO: Prevent the window from being shurnk smaller than the height of the map and a set width
+		float x_pos = _player.getPosition().x;
+		float y_pos = _player.getPosition().y;
 
 		_view.setCenter(sf::Vector2f(x_pos, y_pos + _player.getHeight()));
-		_view.setSize(sf::Vector2f(event.size.width, event.size.height));
+		_view.setSize(sf::Vector2f((float)event.size.width, (float)event.size.height));
 
 		_zoom(_zoomLevel);
-        
-        // TODO: Prevent the window from being shurnk smaller than the height of the map and a set width
     }
 }
 
 // Keep view centered around player
 void Game::_updateView() {
-	sf::Event event;
-	
-	int x_pos = _player.getPosition().x;
-	int y_pos = _player.getPosition().y;
+	float x_pos = _player.getPosition().x;
+	float y_pos = _player.getPosition().y;
 
 	// Center on player
 	_view.setCenter(x_pos, y_pos + _player.getHeight());
 }
 
-void Game::_updatePlayers() {
-	sf::Event event;
-	_player.update(_window, _map, _deltaTime);
+void Game::_updatePlayers(sf::Time frameTime) {
+	_player.update(_map, frameTime);
+	_map.update(frameTime);
 }
 
 // TODO: Find a more elegant way of drawing everything (maybe find or make a way to stack order of drawings -- things that move and things that don't)
@@ -143,7 +138,7 @@ void Game::_draw() {
 	_window.setView(_view);
 
 	// Draw tiles
-	_map.draw(_window, false);
+	_map.draw(_window, true);
 
 	// Draw player
 	_player.draw(_window, false);
@@ -164,6 +159,7 @@ void Game::_draw() {
 
     // Display all items that have been drawn
     _window.display();
+
 }
 
 void Game::_zoom(float factor)
@@ -201,8 +197,8 @@ void Game::_pauseGame() {
 		textRect.top + textRect.height / 2.0f);
 
 
-	float textPosX = _window.getSize().x / 2;
-	float textPosY = _window.getSize().y / 2;
+	float textPosX = (float)_window.getSize().x / 2.f;
+	float textPosY = (float)_window.getSize().y / 2.f;
 	pause.setPosition(sf::Vector2f(textPosX, textPosY -50));
 	resume.setPosition(pause.getPosition().x, pause.getPosition().y + MENU_TXT_MARG * 2);
 	options.setPosition(resume.getPosition().x, resume.getPosition().y + MENU_TXT_MARG);

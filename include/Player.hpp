@@ -12,19 +12,21 @@
 #include "Constants.h"
 #include "Map.hpp"
 #include "Animation.h"
+#include "Animation.h"
+#include "AnimatedSprite.h"
 
+// TODO: Put variable and function definitions in a logical order
 class Player {
 public:
     Player();
     
-	void update(sf::RenderWindow&, const Map&, float);
-	void draw(sf::RenderWindow&, bool);
-	float getHeight();
-    sf::Vector2f getPosition();
-	void doneSlashing();
+	void update(const Map&, const sf::Time);
+	void draw(sf::RenderWindow&, const bool);
+	const float getHeight();
+    const sf::Vector2f getPosition();
 
 private:
-	void _processEvents(sf::RenderWindow&, float);
+	void _processEvents();
 	void _moveRight();
 	void _moveLeft();
 	void _moveDown();
@@ -33,11 +35,23 @@ private:
 	void _applyGravity();
 	void _checkCollisions(const Map&);
 	void _checkTilePosition(const Map&, std::vector<sf::Vector2f>&, float, float);
-	void _collideWithTile(sf::Vector2f);
-	void _setPosition(float, float);
-	void _updatePosition();
-	void _setSpriteScale(float);
+	void _collideWithTile(const sf::Vector2f);
+	void _setPosition(const float, const float);
+	void _updatePosition(const Map&);
+	void _setSpriteScale(const float);
+	void _initializeMedia();
+	void _initializeAnimations();
 private:
+	sf::Sprite _sprite;
+	sf::Texture _texture;
+
+	const Animation* _currentAnimation;
+	Animation _idleAnimation;
+	Animation _runningAnimation;
+	Animation _slashingAnimation;
+	AnimatedSprite animatedSprite;
+	friend class Animation;
+
     float _posX;
     float _posY;
 	float _width;
@@ -53,10 +67,6 @@ private:
 	bool _canJump;
 	bool _facingRight;
 	bool _slashing;
-    sf::Sprite _sprite;
-	sf::Texture _texture;
-	Animation _animation;
-	friend class Animation;
 };
 
 #endif /* Player_hpp */
