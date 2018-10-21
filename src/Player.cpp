@@ -27,43 +27,18 @@ Player::Player() :
 	_slashing(false),
 	animatedSprite(sf::seconds(0.18), true, false)
 {
+	// Initialize Media
+	_initializeMedia();
+
+	// Initialize Animations
+	_initializeAnimations();
+
     // Initialize members vars
     _texWidth = _texture.getSize().x;
     _texHeight = _texture.getSize().y;
-
-
-	// Load the sprite sheet
-	if (!_texture.loadFromFile("assets/adventurer-Sheet.png")) {
-		return;
-	}
-
-	// Create idle animation
-	_idleAnimation.setSpriteSheet(_texture);
-	_idleAnimation.addFrame(sf::IntRect(14, 7, 19, 29));
-	_idleAnimation.addFrame(sf::IntRect(66, 6, 17, 30));
-	_idleAnimation.addFrame(sf::IntRect(115, 6, 19, 30));
-	_idleAnimation.addFrame(sf::IntRect(163, 7, 20, 29));
-
-	// Create running animation
-	_runningAnimation.setSpriteSheet(_texture);
-	_runningAnimation.addFrame(sf::IntRect(67, 45, 20, 28));
-	_runningAnimation.addFrame(sf::IntRect(116, 46, 20, 27));
-	_runningAnimation.addFrame(sf::IntRect(166, 48, 20, 25));
-
-	// Create slashing animation
-	_slashingAnimation.setSpriteSheet(_texture);
-	_slashingAnimation.addFrame(sf::IntRect(115, 222, 34, 36));
-	_slashingAnimation.addFrame(sf::IntRect(165, 222, 27, 36));
-	_slashingAnimation.addFrame(sf::IntRect(215, 226, 19, 32));
-
-	// Finalize animation variables
-	_currentAnimation = &_idleAnimation;
-
-	// Scale as desired
-	_setSpriteScale(_resizeFactor);
 }
 
-void Player::update(const Map& map, sf::Time frameTime) {
+void Player::update(const Map& map, const sf::Time frameTime) {
 	// Movement and collisions
 	_applyGravity();
 	_checkCollisions(map);
@@ -218,7 +193,7 @@ void Player::_checkTilePosition(const Map& map, std::vector<sf::Vector2f>& colli
 	}
 }
 
-void Player::_collideWithTile(sf::Vector2f pos) {
+void Player::_collideWithTile(const sf::Vector2f pos) {
 	const float tileRadius = (float)TILE_W_H / 2.f;
 	const float minDistanceX = _width / 2 + tileRadius;
 	const float minDistanceY = _height / 2 + tileRadius;
@@ -250,7 +225,7 @@ void Player::_collideWithTile(sf::Vector2f pos) {
 	}
 }
 
-sf::Vector2f Player::getPosition() {
+const sf::Vector2f Player::getPosition() {
 	return sf::Vector2f(_posX, _posY);
 }
 
@@ -296,7 +271,7 @@ void Player::_updatePosition(const Map& map) {
     _setPosition(_posX, _posY);
 }
 
-void Player::_setSpriteScale(float scale)
+void Player::_setSpriteScale(const float scale)
 {
 	_resizeFactor = scale;
 
@@ -305,7 +280,40 @@ void Player::_setSpriteScale(float scale)
 	_height *= scale;
 }
 
-void Player::_setPosition(float x, float y) {
+void Player::_initializeMedia()
+{
+	_texture.loadFromFile("assets/adventurer-Sheet.png");
+}
+
+void Player::_initializeAnimations()
+{
+	// Create idle animation
+	_idleAnimation.setSpriteSheet(_texture);
+	_idleAnimation.addFrame(sf::IntRect(14, 7, 19, 29));
+	_idleAnimation.addFrame(sf::IntRect(66, 6, 17, 30));
+	_idleAnimation.addFrame(sf::IntRect(115, 6, 19, 30));
+	_idleAnimation.addFrame(sf::IntRect(163, 7, 20, 29));
+
+	// Create running animation
+	_runningAnimation.setSpriteSheet(_texture);
+	_runningAnimation.addFrame(sf::IntRect(67, 45, 20, 28));
+	_runningAnimation.addFrame(sf::IntRect(116, 46, 20, 27));
+	_runningAnimation.addFrame(sf::IntRect(166, 48, 20, 25));
+
+	// Create slashing animation
+	_slashingAnimation.setSpriteSheet(_texture);
+	_slashingAnimation.addFrame(sf::IntRect(115, 222, 34, 36));
+	_slashingAnimation.addFrame(sf::IntRect(165, 222, 27, 36));
+	_slashingAnimation.addFrame(sf::IntRect(215, 226, 19, 32));
+
+	// Finalize animation variables
+	_currentAnimation = &_idleAnimation;
+
+	// Scale as desired
+	_setSpriteScale(_resizeFactor);
+}
+
+void Player::_setPosition(const float x, const float y) {
 	_sprite.setPosition(x, y);
 }
 
@@ -324,7 +332,7 @@ void Player::draw(sf::RenderWindow &window, bool drawBorder)
 	}
 }
 
-float Player::getHeight()
+const float Player::getHeight()
 {
 	return _height;
 }
