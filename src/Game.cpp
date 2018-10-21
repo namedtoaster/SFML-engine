@@ -178,9 +178,9 @@ void Game::_pauseGame() {
 
 	// Create the text to be drawn
 	sf::Text pause, resume, options;
-	pause.setFont(_font);
+	/*pause.setFont(_font);
 	resume.setFont(_font);
-	options.setFont(_font);
+	options.setFont(_font);*/
 	pause.setString("PAUSE");
 	resume.setString("RESUME");
 	options.setString("OPTIONS");
@@ -208,10 +208,10 @@ void Game::_pauseGame() {
 	options.setPosition(resume.getPosition().x, resume.getPosition().y + MENU_TXT_MARG);
 	_pauseSword.setPosition(resume.getPosition().x - resume.getLocalBounds().width / 2 - 30, resume.getPosition().y);
 
-	_window.draw(pause);
+	/*_window.draw(pause);
 	_window.draw(resume);
 	_window.draw(options);
-	_window.draw(_pauseSword);
+	_window.draw(_pauseSword);*/
 }
 
 void Game::_pauseMenuSelect()
