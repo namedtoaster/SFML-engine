@@ -45,7 +45,7 @@ void Game::_initializeSystem()
 void Game::_initializeMedia()
 {
 	// Load assets
-	_bgTexture.loadFromFile("assets/stars.jpg");
+	_bgTexture.loadFromFile("assets/tree.jpg");
 	_pauseSwordTexture.loadFromFile("assets/pause-sword.png");
 	_vignetteTexture.loadFromFile("assets/vignette.png");
 	_icon.loadFromFile("assets/icon.png");
@@ -56,6 +56,12 @@ void Game::_initializeMedia()
 	_pauseSword.setTexture(_pauseSwordTexture);
 	_vignette.setTexture(_vignetteTexture);
 	_score.setFont(_font);
+    pause.setFont(_font);
+    resume.setFont(_font);
+    options.setFont(_font);
+    pause.setString("PAUSE");
+    resume.setString("RESUME");
+    options.setString("OPTIONS");
 
 	// Positioning/sizing
 	_pauseSword.scale(2.f, 2.f);
@@ -173,13 +179,13 @@ void Game::_pauseGame() {
 	// It's only a pause menu so there shouldn't be much, but still something to think about
 
 	// Create the text to be drawn
-	sf::Text pause, resume, options;
-	/*pause.setFont(_font);
+/*	sf::Text pause, resume, options;
+	pause.setFont(_font);
 	resume.setFont(_font);
-	options.setFont(_font);*/
+	options.setFont(_font);
 	pause.setString("PAUSE");
 	resume.setString("RESUME");
-	options.setString("OPTIONS");
+	options.setString("OPTIONS");*/
 
 	//pause.scale(1.5f, 1.5f);
 	pause.setCharacterSize(60);
@@ -204,10 +210,10 @@ void Game::_pauseGame() {
 	options.setPosition(resume.getPosition().x, resume.getPosition().y + MENU_TXT_MARG);
 	_pauseSword.setPosition(resume.getPosition().x - resume.getLocalBounds().width / 2 - 30, resume.getPosition().y);
 
-	/*_window.draw(pause);
+	_window.draw(pause);
 	_window.draw(resume);
 	_window.draw(options);
-	_window.draw(_pauseSword);*/
+	_window.draw(_pauseSword);
 }
 
 void Game::_pauseMenuSelect()

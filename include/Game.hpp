@@ -55,6 +55,8 @@ private:
 	sf::Texture _vignetteTexture;
 	sf::Text _score;
     sf::Font _font;
+    
+    sf::Text pause, resume, options;
 
     Player _player;
     GameState _state;
