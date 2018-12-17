@@ -24,6 +24,7 @@ public:
 	void draw(sf::RenderWindow&, const bool);
 	const float getHeight();
     const sf::Vector2f getPosition();
+    void canJump();
 
 private:
 	void _processEvents();
@@ -67,6 +68,7 @@ private:
 	bool _canJump;
 	bool _facingRight;
 	bool _slashing;
+    bool _colliding;
 };
 
 #endif /* Player_hpp */

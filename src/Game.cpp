@@ -105,6 +105,8 @@ void Game::_updateWindow() {
             else if (_state == PAUSE)
                 _state = PLAY;
         }
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Space)
+            _player.canJump();
     }
     
     // Window resize
