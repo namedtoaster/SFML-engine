@@ -11,8 +11,8 @@
 
 #include <SFML/Graphics.hpp>
 
-const int WIDTH = 1000;
-const int HEIGHT = 600;
+const int WIDTH = 1500;
+const int HEIGHT = 900;
 
 const int VIEW_WIDTH = WIDTH;
 const int VIEW_HEIGHT = HEIGHT;
