@@ -10,8 +10,8 @@
 #define Game_hpp
 
 //#include "Constants.h"
-#include "Player.hpp"
-#include "Map.hpp"
+#include "Player.h"
+#include "Map.h"
 
 #include <iostream>
 #include <vector>

@@ -6,7 +6,7 @@
 //  Copyright © 2018 Dave Campbell. All rights reserved.
 //
 
-#include "Game.hpp"
+#include "Game.h"
 #include "Animation.h"
 
 Game::Game() : 
