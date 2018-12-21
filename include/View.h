@@ -16,4 +16,4 @@ private:
     int _height;
 };
 
-#endif /* View_hpp */
+#endif /* View_H */

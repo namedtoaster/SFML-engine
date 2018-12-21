@@ -18,13 +18,7 @@ Map::Map(const std::string &filename) {
     while (getline(input, line)) {
 		_tiles.push_back(std::vector<Tile>());
 		for (int j = 0; j < line.size(); j++) {
-			if (line[j] - '0' == 3) {
-				_enemies.push_back(AnimatedSprite(sf::seconds(0.18), true, false));
-				// TODO: get actual size of sprite and have it get updated through playing of animation
-				// Probably need to have an option in that in the animation class
-				_enemies[_enemies.size() - 1].setPosition((float)j * _tileW, (float)i * _tileH);
-			}
-			else _tiles[i].push_back(Tile(line[j] - '0', (float)j * _tileW, (float)i * _tileH));
+			_tiles[i].push_back(Tile(line[j] - '0', (float)j * _tileW, (float)i * _tileH));
 		}
 		i++;
     }
@@ -92,7 +86,7 @@ void Map::draw(sf::RenderWindow &window, bool drawGrid) {
 
 	// Draw the grid
 	if (drawGrid) {
-		std::vector<std::vector<std::vector<sf::Vertex>>> _vertices;
+		//std::vector<std::vector<std::vector<sf::Vertex>>> _vertices;
 		for (int i = 0; i < _tiles.size(); i++) {
 			for (int j = 0; j < _tiles[i].size(); j++) {
 				sf::Vertex vertices[4] = {

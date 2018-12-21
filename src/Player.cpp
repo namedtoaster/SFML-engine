@@ -16,15 +16,15 @@
 Player::Player() :
 	_posX(PLAYER_START_X),
 	_posY(PLAYER_START_Y),
-	_falling(true),
 	_velX(0.0f),
 	_velY(0.0f),
 	_accelX(0.0f),
 	_accelY(0.0f),
-	_canJump(true),
+	_canJump(false),
 	_facingRight(true),
 	_resizeFactor(2.f),
 	_slashing(false),
+    _colliding(false),
 	animatedSprite(sf::seconds(0.18), true, false)
 {
 	// Initialize Media
@@ -78,9 +78,9 @@ void Player::_processEvents() {
 		}
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-		if (!_falling)
-			_jump();
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && _canJump) {
+        _colliding, _canJump = false;
+        _jump();
 	}
 	// Slash
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
@@ -110,17 +110,16 @@ void Player::_moveDown() {
 
 void Player::_jump() {
 	_velY = JUMP_AMT;
-	_falling = true;
+    _colliding = false;
 }
 
 void Player::_applyGravity() {
-	if (_falling) {
+	if (!_colliding) {
 		_velY += GRAVITY;
 		_posY += _velY;
 	}
 	else {
 		_velY = 0;
-		_falling = false;
 	}
 }
 
@@ -146,7 +145,7 @@ void Player::_checkCollisions(const Map &map) {
 	int bottomY = _posY + _height;
 	for (int i = _posX + TILE_W_H; i < (_width + _posX); i += TILE_W_H) {
 		_checkTilePosition(map, collideTilePosition, i, bottomY);
-	}
+    }
 	// Check right edge
 	int rightX = _posX + _width;
 	for (int i = _posY + TILE_W_H; i < (_height + _posY); i += TILE_W_H) {
@@ -179,6 +178,12 @@ void Player::_checkCollisions(const Map &map) {
 	for (int i = 0; i < collideTilePosition.size(); i++) {
 		_collideWithTile(collideTilePosition[i]);
 	}
+    // Reset colliding var
+    _colliding = false;
+    int bottomCoordX = this->_posX / TILE_W_H;
+    int bottomCoordY = (this->_posY + this->_height) / TILE_W_H;
+    if (map._tiles[bottomCoordY][bottomCoordX].tileType != 0)
+        _colliding = true;
 }
 
 void Player::_checkTilePosition(const Map& map, std::vector<sf::Vector2f>& collideTilePosition, float x, float y) {
@@ -189,7 +194,6 @@ void Player::_checkTilePosition(const Map& map, std::vector<sf::Vector2f>& colli
 		if (map._tiles[cornerPos.y][cornerPos.x].tileType != 0) {
 			collideTilePosition.push_back(sf::Vector2f((float)TILE_W_H * cornerPos.x + (TILE_W_H / 2), (float)TILE_W_H * cornerPos.y + (TILE_W_H / 2)));
 		}
-		else _falling = true;
 	}
 }
 
@@ -214,7 +218,6 @@ void Player::_collideWithTile(const sf::Vector2f pos) {
 			}
 		}
 		else {
-			_falling = false;
 			if (distVec.y < 0) {
 				_posY -= ydepth;
 			}
@@ -249,7 +252,6 @@ void Player::_updatePosition(const Map& map) {
 	if (_posY + _height > map._tiles.size() * TILE_W_H - TILE_W_H) {
 		diff = (_posY + _height) - (map._tiles.size() * TILE_W_H - TILE_W_H);
 		_posY -= diff;
-		_falling = false;
 	}
 	// Don't go through the top of the map
 	if (_posY < TILE_W_H) {
@@ -269,6 +271,10 @@ void Player::_updatePosition(const Map& map) {
 
     // Update the player's position
     _setPosition(_posX, _posY);
+}
+
+void Player::canJump() {
+    _canJump = true;
 }
 
 void Player::_setSpriteScale(const float scale)
