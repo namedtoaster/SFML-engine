@@ -6,7 +6,7 @@
 //  Copyright © 2018 Dave Campbell. All rights reserved.
 //
 
-#include "Game.hpp"
+#include "Game.h"
 #include "Animation.h"
 
 Game::Game() : 
@@ -128,26 +128,35 @@ void Game::_updatePlayers(sf::Time frameTime) {
 	_map.update(frameTime);
 }
 
-// TODO: Find a more elegant way of drawing everything (maybe find or make a way to stack order of drawings -- things that move and things that don't)
-void Game::_draw() {
-    // Clear the window and draw solid color (defaults to black)
-	_window.clear();
-
+void Game::_drawBackground()
+{
 	// Draw bg
 	_window.draw(_bg);
 	_window.setView(_view);
+}
 
+void Game::_drawMap()
+{
 	// Draw tiles
 	_map.draw(_window, true);
+}
 
+void Game::_drawPlayers()
+{
 	// Draw player
 	_player.draw(_window, false);
-    // TODO: Create different functions for drawing the character, drawing enemies, drawing the onscreen text, and more
+	// TODO: Create different functions for drawing the character, drawing enemies, drawing the onscreen text, and more
+}
 
+void Game::_drawScreenEffects()
+{
 	_window.setView(_window.getDefaultView());
 	// Vignette test
 	_window.draw(_vignette);
+}
 
+void Game::_drawHUDandMenus()
+{
 	// Draw text
 	_window.draw(_score);
 
@@ -156,6 +165,19 @@ void Game::_draw() {
 	if (_state == PAUSE) {
 		_pauseGame();
 	}
+}
+
+// TODO: Find a more elegant way of drawing everything (maybe find or make a way to stack order of drawings -- things that move and things that don't)
+void Game::_draw() {
+    // Clear the window and draw solid color (defaults to black)
+	_window.clear();
+
+	// Draw various elements
+	_drawBackground();
+	_drawMap();
+	_drawPlayers();
+	_drawScreenEffects();
+	_drawHUDandMenus();
 
     // Display all items that have been drawn
     _window.display();

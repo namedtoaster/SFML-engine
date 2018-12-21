@@ -10,8 +10,8 @@
 #define Game_hpp
 
 //#include "Constants.h"
-#include "Player.hpp"
-#include "Map.hpp"
+#include "Player.h"
+#include "Map.h"
 
 #include <iostream>
 #include <vector>
@@ -33,6 +33,11 @@ private:
 	void _updateWindow();
     void _updateView();
 	void _updatePlayers(sf::Time);
+	void _drawBackground();
+	void _drawMap();
+	void _drawPlayers();
+	void _drawScreenEffects();
+	void _drawHUDandMenus();
     void _draw();
 	void _zoom(float);
     void _pauseGame();

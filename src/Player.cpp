@@ -6,8 +6,8 @@
 //  Copyright © 2018 Dave Campbell. All rights reserved.
 //
 
-#include "Player.hpp"
-#include "Map.hpp"
+#include "Player.h"
+#include "Map.h"
 #include "Tile.h"
 #include <iostream>
 #include <algorithm>

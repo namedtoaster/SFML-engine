@@ -10,7 +10,7 @@
 #define Player_hpp
 
 #include "Constants.h"
-#include "Map.hpp"
+#include "Map.h"
 #include "Animation.h"
 #include "Animation.h"
 #include "AnimatedSprite.h"

@@ -6,7 +6,7 @@
 //  Copyright © 2018 Dave Campbell. All rights reserved.
 //
 
-#include "Map.hpp"
+#include "Map.h"
 #include <fstream>
 #include <iostream>
 
