@@ -6,8 +6,8 @@
 //  Copyright © 2018 Dave Campbell. All rights reserved.
 //
 
-#ifndef View_hpp
-#define View_hpp
+#ifndef VIEW_H
+#define VIEW_H
 
 class View {
 public:
@@ -16,4 +16,4 @@ private:
     int _height;
 };
 
-#endif /* View_hpp */
+#endif /* View_H */

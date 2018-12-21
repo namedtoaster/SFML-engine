@@ -33,9 +33,14 @@ private:
 	void _updateWindow();
     void _updateView();
 	void _updatePlayers(sf::Time);
-    void _draw();
+	void _drawBackground();
+	void _drawMap();
+	void _drawPlayers();
+	void _drawScreenEffects();
+	void _drawHUDandMenus();
+  void _draw();
 	void _zoom(float);
-    void _pauseGame();
+  void _pauseGame();
 	void _pauseMenuSelect();
 private:
 	float _deltaTime;
@@ -54,13 +59,12 @@ private:
 	sf::Sprite _vignette;
 	sf::Texture _vignetteTexture;
 	sf::Text _score;
-    sf::Font _font;
-    
-    sf::Text pause, resume, options;
+  sf::Font _font;
+  sf::Text pause, resume, options;
 
-    Player _player;
-    GameState _state;
-    Map _map;
+  Player _player;
+  GameState _state;
+  Map _map;
 	friend class Player;
 };
 

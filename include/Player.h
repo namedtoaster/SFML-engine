@@ -18,13 +18,13 @@
 // TODO: Put variable and function definitions in a logical order
 class Player {
 public:
-    Player();
+  Player();
     
 	void update(const Map&, const sf::Time);
 	void draw(sf::RenderWindow&, const bool);
 	const float getHeight();
-    const sf::Vector2f getPosition();
-    void canJump();
+  const sf::Vector2f getPosition();
+  void canJump();
 
 private:
 	void _processEvents();
@@ -57,18 +57,18 @@ private:
     float _posY;
 	float _width;
 	float _height;
-    float _velX;
-    float _velY;
-    float _accelX;
-    float _accelY;
+  float _velX;
+  float _velY;
+  float _accelX;
+  float _accelY;
 	float _resizeFactor;
-    int _texWidth;
-    int _texHeight;
-    bool _falling;
+  int _texWidth;
+  int _texHeight;
+  bool _falling;
 	bool _canJump;
 	bool _facingRight;
 	bool _slashing;
-    bool _colliding;
+  bool _colliding;
 };
 
 #endif /* Player_hpp */
